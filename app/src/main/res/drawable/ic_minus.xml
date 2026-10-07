@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_minus.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
+    <path
+        android:pathData="M3.75 9H14.25"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.65"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

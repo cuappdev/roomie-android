@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_info.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <path
+        android:pathData="M10 17.9167C14.3723 17.9167 17.9167 14.3723 17.9167 10C17.9167 5.62775 14.3723 2.08333 10 2.08333C5.62775 2.08333 2.08333 5.62775 2.08333 10C2.08333 14.3723 5.62775 17.9167 10 17.9167Z"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10 9.16667V13.3333"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10 6.25H10.0083"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

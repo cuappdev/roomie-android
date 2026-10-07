@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_pinned_badge.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="11.0063dp"
+    android:height="11.0063dp"
+    android:viewportWidth="11.0063"
+    android:viewportHeight="11.0063">
+    <path
+        android:pathData="M5.50314 7.79611V10.0891"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.00891"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M2.29297 7.79611H8.7133V6.98898C8.71321 6.81835 8.66552 6.65112 8.57559 6.5061C8.48566 6.36109 8.35707 6.24403 8.20426 6.1681L7.38796 5.75536C7.23515 5.67943 7.10655 5.56237 7.01663 5.41736C6.9267 5.27234 6.87901 5.10511 6.87892 4.93448V2.75157H7.33751C7.58077 2.75157 7.81406 2.65494 7.98606 2.48293C8.15807 2.31092 8.2547 2.07763 8.2547 1.83438C8.2547 1.59112 8.15807 1.35783 7.98606 1.18583C7.81406 1.01382 7.58077 0.917189 7.33751 0.917189H3.66876C3.4255 0.917189 3.19221 1.01382 3.02021 1.18583C2.8482 1.35783 2.75157 1.59112 2.75157 1.83438C2.75157 2.07763 2.8482 2.31092 3.02021 2.48293C3.19221 2.65494 3.4255 2.75157 3.66876 2.75157H4.12735V4.93448C4.12726 5.10511 4.07957 5.27234 3.98965 5.41736C3.89972 5.56237 3.77112 5.67943 3.61831 5.75536L2.80201 6.1681C2.6492 6.24403 2.52061 6.36109 2.43068 6.5061C2.34075 6.65112 2.29306 6.81835 2.29297 6.98898V7.79611Z"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.00891"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

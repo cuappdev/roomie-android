@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset avatar_toaster.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:pathData="M24 48C37.2548 48 48 37.2548 48 24C48 10.7452 37.2548 0 24 0C10.7452 0 0 10.7452 0 24C0 37.2548 10.7452 48 24 48Z"
+        android:fillColor="#CBE2D0" />
+    <path
+        android:pathData="M16.875 36.375H14.625C14.0037 36.375 13.5 36.8787 13.5 37.5V38.25C13.5 38.8713 14.0037 39.375 14.625 39.375H16.875C17.4963 39.375 18 38.8713 18 38.25V37.5C18 36.8787 17.4963 36.375 16.875 36.375Z"
+        android:fillColor="#6F86B5" />
+    <path
+        android:pathData="M33.375 36.375H31.125C30.5037 36.375 30 36.8787 30 37.5V38.25C30 38.8713 30.5037 39.375 31.125 39.375H33.375C33.9963 39.375 34.5 38.8713 34.5 38.25V37.5C34.5 36.8787 33.9963 36.375 33.375 36.375Z"
+        android:fillColor="#6F86B5" />
+    <path
+        android:pathData="M32.25 21.375H15.75C12.8505 21.375 10.5 23.7255 10.5 26.625V31.875C10.5 34.7745 12.8505 37.125 15.75 37.125H32.25C35.1495 37.125 37.5 34.7745 37.5 31.875V26.625C37.5 23.7255 35.1495 21.375 32.25 21.375Z"
+        android:fillColor="#9EB1D6"
+        android:strokeColor="#6F86B5"
+        android:strokeWidth="1.5" />
+    <path
+        android:pathData="M32.25 21.375H15.75C14.9216 21.375 14.25 22.0466 14.25 22.875C14.25 23.7034 14.9216 24.375 15.75 24.375H32.25C33.0784 24.375 33.75 23.7034 33.75 22.875C33.75 22.0466 33.0784 21.375 32.25 21.375Z"
+        android:fillColor="#5A6F9C" />
+    <path
+        android:pathData="M16.125 24V15.375C13.875 14.625 13.875 10.125 17.625 10.125C19.875 8.25 28.125 8.25 30.375 10.125C34.125 10.125 34.125 14.625 31.875 15.375V24H16.125Z"
+        android:fillColor="#E9C27F"
+        android:strokeColor="#C98F4E"
+        android:strokeWidth="1.5"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M21.5175 31.29C22.0228 31.29 22.4325 30.8803 22.4325 30.375C22.4325 29.8697 22.0228 29.46 21.5175 29.46C21.0122 29.46 20.6025 29.8697 20.6025 30.375C20.6025 30.8803 21.0122 31.29 21.5175 31.29Z"
+        android:fillColor="#3A2E22" />
+    <path
+        android:pathData="M26.4825 31.29C26.9878 31.29 27.3975 30.8803 27.3975 30.375C27.3975 29.8697 26.9878 29.46 26.4825 29.46C25.9772 29.46 25.5675 29.8697 25.5675 30.375C25.5675 30.8803 25.9772 31.29 26.4825 31.29Z"
+        android:fillColor="#3A2E22" />
+    <path
+        android:pathData="M20.115 32.9625C20.8316 32.9625 21.4125 32.5763 21.4125 32.1C21.4125 31.6237 20.8316 31.2375 20.115 31.2375C19.3984 31.2375 18.8175 31.6237 18.8175 32.1C18.8175 32.5763 19.3984 32.9625 20.115 32.9625Z"
+        android:fillColor="#F2A7A0"
+        android:fillAlpha="0.6" />
+    <path
+        android:pathData="M27.885 32.9625C28.6016 32.9625 29.1825 32.5763 29.1825 32.1C29.1825 31.6237 28.6016 31.2375 27.885 31.2375C27.1684 31.2375 26.5875 31.6237 26.5875 32.1C26.5875 32.5763 27.1684 32.9625 27.885 32.9625Z"
+        android:fillColor="#F2A7A0"
+        android:fillAlpha="0.6" />
+    <path
+        android:pathData="M22.7025 31.995C23.5675 32.86 24.4325 32.86 25.2975 31.995"
+        android:strokeColor="#3A2E22"
+        android:strokeWidth="0.645"
+        android:strokeLineCap="round" />
+</vector>

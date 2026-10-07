@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_tab_cart.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+    <path
+        android:pathData="M10 27.5C10.6904 27.5 11.25 26.9404 11.25 26.25C11.25 25.5596 10.6904 25 10 25C9.30964 25 8.75 25.5596 8.75 26.25C8.75 26.9404 9.30964 27.5 10 27.5Z"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M23.75 27.5C24.4404 27.5 25 26.9404 25 26.25C25 25.5596 24.4404 25 23.75 25C23.0596 25 22.5 25.5596 22.5 26.25C22.5 26.9404 23.0596 27.5 23.75 27.5Z"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M2.5 2.5H6.25L9.625 18C9.74188 18.5732 10.0561 19.0872 10.5129 19.4527C10.9697 19.8181 11.5401 20.0118 12.125 20H21.875C22.4214 19.99 22.9495 19.8013 23.3784 19.4626C23.8073 19.124 24.1135 18.6542 24.25 18.125L26.25 8.75H6.375"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

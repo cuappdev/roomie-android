@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_chevron_right_small.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:pathData="M6 12L10 8L6 4"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.46667"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

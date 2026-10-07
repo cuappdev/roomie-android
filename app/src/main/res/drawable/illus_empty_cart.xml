@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset illus_empty_cart.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:pathData="M60 120C93.1371 120 120 93.1371 120 60C120 26.8629 93.1371 0 60 0C26.8629 0 0 26.8629 0 60C0 93.1371 26.8629 120 60 120Z"
+        android:fillColor="#FCECD1" />
+    <path
+        android:pathData="M18.75 27.1875H30L35.625 36.5625"
+        android:strokeColor="#5F8FE0"
+        android:strokeWidth="5.625"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M31.875 38.4375H101.25L91.875 75.9375H45L31.875 38.4375Z"
+        android:fillColor="#CBE5F2"
+        android:strokeColor="#5F8FE0"
+        android:strokeWidth="4.6875"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M52.5 95.4375C56.0208 95.4375 58.875 92.5833 58.875 89.0625C58.875 85.5417 56.0208 82.6875 52.5 82.6875C48.9792 82.6875 46.125 85.5417 46.125 89.0625C46.125 92.5833 48.9792 95.4375 52.5 95.4375Z"
+        android:fillColor="#5F8FE0" />
+    <path
+        android:pathData="M86.25 95.4375C89.7708 95.4375 92.625 92.5833 92.625 89.0625C92.625 85.5417 89.7708 82.6875 86.25 82.6875C82.7292 82.6875 79.875 85.5417 79.875 89.0625C79.875 92.5833 82.7292 95.4375 86.25 95.4375Z"
+        android:fillColor="#5F8FE0" />
+    <path
+        android:pathData="M61.3875 57.225C62.4437 57.225 63.3 56.3687 63.3 55.3125C63.3 54.2563 62.4437 53.4 61.3875 53.4C60.3313 53.4 59.475 54.2563 59.475 55.3125C59.475 56.3687 60.3313 57.225 61.3875 57.225Z"
+        android:fillColor="#3A2E22" />
+    <path
+        android:pathData="M71.7375 57.225C72.7937 57.225 73.65 56.3687 73.65 55.3125C73.65 54.2563 72.7937 53.4 71.7375 53.4C70.6813 53.4 69.825 54.2563 69.825 55.3125C69.825 56.3687 70.6813 57.225 71.7375 57.225Z"
+        android:fillColor="#3A2E22" />
+    <path
+        android:pathData="M58.4625 60.7125C59.9537 60.7125 61.1625 59.9066 61.1625 58.9125C61.1625 57.9184 59.9537 57.1125 58.4625 57.1125C56.9713 57.1125 55.7625 57.9184 55.7625 58.9125C55.7625 59.9066 56.9713 60.7125 58.4625 60.7125Z"
+        android:fillColor="#F2A7A0"
+        android:fillAlpha="0.6" />
+    <path
+        android:pathData="M74.6625 60.7125C76.1537 60.7125 77.3625 59.9066 77.3625 58.9125C77.3625 57.9184 76.1537 57.1125 74.6625 57.1125C73.1713 57.1125 71.9625 57.9184 71.9625 58.9125C71.9625 59.9066 73.1713 60.7125 74.6625 60.7125Z"
+        android:fillColor="#F2A7A0"
+        android:fillAlpha="0.6" />
+    <path
+        android:pathData="M63.8625 58.6875C65.6625 60.4875 67.4625 60.4875 69.2625 58.6875"
+        android:strokeColor="#3A2E22"
+        android:strokeWidth="1.35"
+        android:strokeLineCap="round" />
+</vector>

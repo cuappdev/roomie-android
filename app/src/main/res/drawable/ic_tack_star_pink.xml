@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_tack_star_pink.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="15.0061dp"
+    android:height="15.0061dp"
+    android:viewportWidth="15.0061"
+    android:viewportHeight="15.0061">
+    <path
+        android:pathData="M7.50304 1.25051L9.31627 5.37718L13.7556 5.81486L10.4417 8.81607L11.3796 13.1928L7.50304 10.9419L3.62647 13.1928L4.56435 8.81607L1.2505 5.81486L5.6898 5.37718L7.50304 1.25051Z"
+        android:fillColor="#E783C4"
+        android:strokeColor="#000000"
+        android:strokeWidth="0.625253"
+        android:strokeAlpha="0.15" />
+</vector>

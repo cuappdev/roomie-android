@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_calendar_tiny.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="9.99454dp"
+    android:height="9.99454dp"
+    android:viewportWidth="9.99454"
+    android:viewportHeight="9.99454">
+    <path
+        android:pathData="M7.91235 1.87398H2.0822C1.62221 1.87398 1.24932 2.24687 1.24932 2.70686V8.12057C1.24932 8.58055 1.62221 8.95344 2.0822 8.95344H7.91235C8.37233 8.95344 8.74523 8.58055 8.74523 8.12057V2.70686C8.74523 2.24687 8.37233 1.87398 7.91235 1.87398Z"
+        android:strokeColor="#1F1D1A"
+        android:strokeWidth="0.999454"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M6.66303 1.0411V2.70776"
+        android:strokeColor="#1F1D1A"
+        android:strokeWidth="0.999454"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3.33152 1.0411V2.70776"
+        android:strokeColor="#1F1D1A"
+        android:strokeWidth="0.999454"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M1.24932 4.16439H8.74523"
+        android:strokeColor="#1F1D1A"
+        android:strokeWidth="0.999454"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

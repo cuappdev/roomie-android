@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_tab_chores.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+    <path
+        android:pathData="M3.75 21.25L6.25 23.75L11.25 18.75"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3.75 8.75L6.25 11.25L11.25 6.25"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M16.25 7.5H26.25"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M16.25 15H26.25"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M16.25 22.5H26.25"
+        android:strokeColor="#767676"
+        android:strokeWidth="1.875"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

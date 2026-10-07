@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_house_logo.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="34dp"
+    android:height="34dp"
+    android:viewportWidth="34"
+    android:viewportHeight="34">
+    <path
+        android:pathData="M17 3.54167L2.83333 15.5833H6.8V30.4583H27.2V15.5833H31.1667L17 3.54167Z"
+        android:fillColor="#8A6846" />
+</vector>

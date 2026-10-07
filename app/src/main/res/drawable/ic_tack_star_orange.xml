@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset ic_tack_star_orange.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14.9968dp"
+    android:height="14.9968dp"
+    android:viewportWidth="14.9968"
+    android:viewportHeight="14.9968">
+    <path
+        android:pathData="M7.4984 1.24973L9.31051 5.37385L13.7471 5.81126L10.4353 8.81062L11.3726 13.1847L7.4984 10.9352L3.62423 13.1847L4.56153 8.81062L1.24973 5.81126L5.68629 5.37385L7.4984 1.24973Z"
+        android:fillColor="#F29A4A"
+        android:strokeColor="#000000"
+        android:strokeWidth="0.624867"
+        android:strokeAlpha="0.15" />
+</vector>
