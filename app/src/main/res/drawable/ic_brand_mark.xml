@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma "Roomie / Brand mark" (377:2414): tan tile, smiling house, two sticky notes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <group>
+        <clip-path android:pathData="M13,0H51A13,13 0,0 1,64 13V51A13,13 0,0 1,51 64H13A13,13 0,0 1,0 51V13A13,13 0,0 1,13 0Z" />
+        <path
+            android:pathData="M64,0H0V64H64V0Z"
+            android:fillColor="#B5926F" />
+
+        <!-- Left sticky note (blue), rotated -12deg -->
+        <group
+            android:pivotX="8.125"
+            android:pivotY="8.25"
+            android:rotation="-12"
+            android:translateX="8.646"
+            android:translateY="35.363">
+            <path
+                android:fillAlpha="0.28"
+                android:fillColor="#6B4E32"
+                android:pathData="M15.6249 0.874914H1.2499C0.904719 0.874914 0.624897 1.15474 0.624897 1.49991V15.8749C0.624897 16.2201 0.904719 16.4999 1.2499 16.4999H15.6249C15.9701 16.4999 16.2499 16.2201 16.2499 15.8749V1.49991C16.2499 1.15474 15.9701 0.874914 15.6249 0.874914Z" />
+            <path
+                android:fillColor="#CBE5F2"
+                android:pathData="M15 0H0.625006C0.279829 0 6.50939e-06 0.279822 6.50939e-06 0.625V15C6.50939e-06 15.3452 0.279829 15.625 0.625006 15.625H15C15.3452 15.625 15.625 15.3452 15.625 15V0.625C15.625 0.279822 15.3452 0 15 0Z" />
+            <path
+                android:fillColor="#5F8FE0"
+                android:pathData="M4.18741 3.37491C4.84325 3.37491 5.37491 2.84325 5.37491 2.18742C5.37491 1.53158 4.84325 0.999915 4.18741 0.999915C3.53157 0.999915 2.99991 1.53158 2.99991 2.18742C2.99991 2.84325 3.53157 3.37491 4.18741 3.37491Z" />
+            <path
+                android:fillAlpha="0.55"
+                android:fillColor="#FFFFFF"
+                android:pathData="M3.81241 2.18741C4.01951 2.18741 4.18741 2.01952 4.18741 1.81241C4.18741 1.60531 4.01951 1.43741 3.81241 1.43741C3.6053 1.43741 3.43741 1.60531 3.43741 1.81241C3.43741 2.01952 3.6053 2.18741 3.81241 2.18741Z" />
+        </group>
+
+        <!-- Right sticky note (yellow), rotated 12deg -->
+        <group
+            android:pivotX="8.125"
+            android:pivotY="8.25"
+            android:rotation="12"
+            android:translateX="39.715"
+            android:translateY="35.494">
+            <path
+                android:fillAlpha="0.28"
+                android:fillColor="#6B4E32"
+                android:pathData="M15.625 0.875129H1.24997C0.904787 0.875129 0.624965 1.15495 0.624965 1.50013V15.8751C0.624965 16.2203 0.904787 16.5001 1.24997 16.5001H15.625C15.9701 16.5001 16.25 16.2203 16.25 15.8751V1.50013C16.25 1.15495 15.9701 0.875129 15.625 0.875129Z" />
+            <path
+                android:fillColor="#FDF2B1"
+                android:pathData="M15 0H0.625C0.279822 0 0 0.279822 0 0.625V15C0 15.3452 0.279822 15.625 0.625 15.625H15C15.3452 15.625 15.625 15.3452 15.625 15V0.625C15.625 0.279822 15.3452 0 15 0Z" />
+            <path
+                android:fillColor="#E8714A"
+                android:pathData="M11.4375 3.37513C12.0933 3.37513 12.625 2.84347 12.625 2.18763C12.625 1.53179 12.0933 1.00013 11.4375 1.00013C10.7816 1.00013 10.25 1.53179 10.25 2.18763C10.25 2.84347 10.7816 3.37513 11.4375 3.37513Z" />
+            <path
+                android:fillAlpha="0.55"
+                android:fillColor="#FFFFFF"
+                android:pathData="M11.0625 2.18763C11.2696 2.18763 11.4375 2.01973 11.4375 1.81263C11.4375 1.60552 11.2696 1.43763 11.0625 1.43763C10.8554 1.43763 10.6875 1.60552 10.6875 1.81263C10.6875 2.01973 10.8554 2.18763 11.0625 2.18763Z" />
+        </group>
+
+        <!-- House shadow -->
+        <group
+            android:translateX="11.149"
+            android:translateY="11.148">
+            <path
+                android:fillAlpha="0.28"
+                android:fillColor="#6B4E32"
+                android:pathData="M34.4748 16.0997H8.47481C6.33471 16.0997 4.59981 17.8346 4.59981 19.9747V34.0997C4.59981 36.2398 6.33471 37.9747 8.47481 37.9747H34.4748C36.6149 37.9747 38.3498 36.2398 38.3498 34.0997V19.9747C38.3498 17.8346 36.6149 16.0997 34.4748 16.0997Z" />
+            <path
+                android:fillAlpha="0.28"
+                android:fillColor="#6B4E32"
+                android:pathData="M21.4748 1.84971L41.0998 17.9747H1.84981L21.4748 1.84971Z"
+                android:strokeAlpha="0.28"
+                android:strokeColor="#6B4E32"
+                android:strokeLineJoin="round"
+                android:strokeWidth="3.69942" />
+        </group>
+
+        <!-- House body -->
+        <group
+            android:translateX="15.123"
+            android:translateY="26.253">
+            <path
+                android:fillColor="#FFFCF8"
+                android:pathData="M29.875 0H3.875C1.7349 0 0 1.7349 0 3.875V18C0 20.1401 1.7349 21.875 3.875 21.875H29.875C32.0151 21.875 33.75 20.1401 33.75 18V3.875C33.75 1.7349 32.0151 0 29.875 0Z" />
+        </group>
+
+        <!-- Roof -->
+        <group
+            android:translateX="10.53"
+            android:translateY="10.15">
+            <path
+                android:fillColor="#8A6846"
+                android:pathData="M21.4748 1.84971L41.0998 17.9747H1.84981L21.4748 1.84971Z"
+                android:strokeColor="#8A6846"
+                android:strokeLineJoin="round"
+                android:strokeWidth="3.69942" />
+        </group>
+
+        <!-- Eyes -->
+        <group
+            android:translateX="25.997"
+            android:translateY="36">
+            <path
+                android:fillColor="#3A2E22"
+                android:pathData="M1.375 2.75C2.13439 2.75 2.75 2.13439 2.75 1.375C2.75 0.615608 2.13439 0 1.375 0C0.615608 0 0 0.615608 0 1.375C0 2.13439 0.615608 2.75 1.375 2.75Z" />
+        </group>
+        <group
+            android:translateX="35.251"
+            android:translateY="36">
+            <path
+                android:fillColor="#3A2E22"
+                android:pathData="M1.375 2.75C2.13439 2.75 2.75 2.13439 2.75 1.375C2.75 0.615608 2.13439 0 1.375 0C0.615608 0 0 0.615608 0 1.375C0 2.13439 0.615608 2.75 1.375 2.75Z" />
+        </group>
+
+        <!-- Cheeks -->
+        <group
+            android:translateX="21.997"
+            android:translateY="39.437">
+            <path
+                android:fillAlpha="0.6"
+                android:fillColor="#F2A7A0"
+                android:pathData="M2.25 2.625C3.49264 2.625 4.5 2.03737 4.5 1.3125C4.5 0.587626 3.49264 0 2.25 0C1.00736 0 0 0.587626 0 1.3125C0 2.03737 1.00736 2.625 2.25 2.625Z" />
+        </group>
+        <group
+            android:translateX="37.498"
+            android:translateY="39.437">
+            <path
+                android:fillAlpha="0.6"
+                android:fillColor="#F2A7A0"
+                android:pathData="M2.25 2.625C3.49264 2.625 4.5 2.03737 4.5 1.3125C4.5 0.587626 3.49264 0 2.25 0C1.00736 0 0 0.587626 0 1.3125C0 2.03737 1.00736 2.625 2.25 2.625Z" />
+        </group>
+
+        <!-- Smile -->
+        <group
+            android:translateX="28.775"
+            android:translateY="39.649">
+            <path
+                android:pathData="M0.601156 0.601156C2.35116 2.35116 4.10116 2.35116 5.85116 0.601156"
+                android:strokeColor="#3A2E22"
+                android:strokeLineCap="round"
+                android:strokeWidth="1.20231" />
+        </group>
+    </group>
+</vector>

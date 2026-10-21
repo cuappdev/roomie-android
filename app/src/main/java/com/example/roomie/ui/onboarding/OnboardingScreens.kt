@@ -1,8 +1,8 @@
 package com.example.roomie.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -46,12 +45,12 @@ import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,12 +71,11 @@ import com.example.roomie.ui.components.RoomieTextField
 import com.example.roomie.ui.components.RoommateRow
 import com.example.roomie.ui.components.ShareInviteButton
 import com.example.roomie.ui.components.TextAction
+import com.example.roomie.ui.components.glassSurface
 import com.example.roomie.ui.theme.Background
-import com.example.roomie.ui.theme.Border
 import com.example.roomie.ui.theme.BrandBrown
 import com.example.roomie.ui.theme.Divider
 import com.example.roomie.ui.theme.RoomieType
-import com.example.roomie.ui.theme.ShadowBrown
 import com.example.roomie.ui.theme.Surface
 import com.example.roomie.ui.theme.TabIcon
 import com.example.roomie.ui.theme.TextSecondary
@@ -94,6 +92,7 @@ private fun OnboardingScaffold(
     subtitle: String?,
     onBack: (() -> Unit)?,
     bottom: @Composable ColumnScope.() -> Unit,
+    titleStyle: TextStyle = RoomieType.onboardingTitle,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -115,7 +114,7 @@ private fun OnboardingScaffold(
             if (step != null) StepProgress(step, Modifier.weight(1f))
         }
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(title, style = if (subtitle == null) RoomieType.onboardingTitle.copy(fontSize = 28.sp, letterSpacing = 0.sp) else RoomieType.onboardingTitle, modifier = Modifier.semantics { heading() })
+            Text(title, style = titleStyle, modifier = Modifier.semantics { heading() })
             if (subtitle != null) Text(subtitle, style = RoomieType.onboardingSubtitle)
         }
         Column(
@@ -147,12 +146,12 @@ private fun StepProgress(step: Int, modifier: Modifier = Modifier) {
 // region 1. Sign in
 
 @Composable
-fun SignInScreen(onSignedIn: (hasHouse: Boolean, wantsToJoin: Boolean) -> Unit, vm: OnboardingViewModel = viewModel()) {
+fun SignInScreen(onSignedIn: (hasHouse: Boolean) -> Unit, vm: OnboardingViewModel = viewModel()) {
     var netId by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
-    fun submit(wantsToJoin: Boolean) {
-        error = vm.signIn(netId, password) { hasHouse -> onSignedIn(hasHouse, wantsToJoin) }
+    fun submit() {
+        error = vm.signIn(netId, password, onSignedIn)
     }
 
     Column(
@@ -166,70 +165,39 @@ fun SignInScreen(onSignedIn: (hasHouse: Boolean, wantsToJoin: Boolean) -> Unit, 
             .padding(horizontal = 20.dp)
             .padding(top = 43.dp, bottom = 20.dp),
     ) {
-        Box(
-            Modifier
-                .size(64.dp)
-                .shadow(5.dp, RoundedCornerShape(18.dp), ambientColor = ShadowBrown.copy(alpha = 0.3f), spotColor = ShadowBrown.copy(alpha = 0.3f))
-                .background(Surface, RoundedCornerShape(18.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(painterResource(R.drawable.ic_house_logo), null, Modifier.size(34.dp), tint = Color.Unspecified)
-        }
+        Image(painterResource(R.drawable.ic_brand_mark), null, Modifier.size(64.dp))
         Spacer(Modifier.height(15.dp))
         Text("Welcome to Roomie", style = RoomieType.welcomeTitle, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(8.dp))
         Text("Sign in with your Cornell NetID", style = RoomieType.input.copy(color = TextSecondary))
-        Spacer(Modifier.height(24.dp))
-        LabeledField("NetID") {
+        Spacer(Modifier.height(18.dp))
+        LabeledField("NetID", labelStyle = RoomieType.onboardingLabel) {
             RoomieTextField(
                 value = netId,
                 onValueChange = { netId = it.trim(); error = null },
                 placeholder = "e.g. lk452",
                 suffix = "@cornell.edu",
+                suffixStyle = RoomieType.input.copy(color = TextSecondary, lineHeight = 20.sp),
                 isError = error != null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, capitalization = KeyboardCapitalization.None, imeAction = ImeAction.Next, autoCorrectEnabled = false),
                 contentDescription = "Cornell NetID",
             )
         }
         Spacer(Modifier.height(16.dp))
-        LabeledField("Password") {
+        LabeledField("Password", labelStyle = RoomieType.onboardingLabel) {
             RoomieTextField(
                 value = password,
                 onValueChange = { password = it; error = null },
                 placeholder = "Password",
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Go),
-                keyboardActions = KeyboardActions(onGo = { submit(false) }),
+                keyboardActions = KeyboardActions(onGo = { submit() }),
                 contentDescription = "Password",
             )
         }
         ErrorText(error, Modifier.padding(top = 8.dp))
         Spacer(Modifier.height(20.dp))
-        PrimaryButton("Sign in", { submit(false) })
-        Spacer(Modifier.height(16.dp))
-        Text(
-            "Only Cornell accounts can join a house, so you always know who you're living with.",
-            style = RoomieType.bodySecondary.copy(lineHeight = 18.85.sp),
-        )
-        Spacer(Modifier.weight(1f).height(32.dp))
-        val shape = RoundedCornerShape(10.dp)
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(shape)
-                .background(Surface)
-                .border(1.dp, Border, shape)
-                .clickable(role = Role.Button, onClickLabel = "Sign in and join with an invite code") { submit(true) }
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("Got an invite code?", style = RoomieType.sectionTitle.copy(lineHeight = 19.sp))
-                Text("Join your roommates' house directly", style = RoomieType.bodySecondary)
-            }
-            Icon(painterResource(R.drawable.ic_chevron_right_20), null, Modifier.size(20.dp), tint = Color.Unspecified)
-        }
+        PrimaryButton("Sign In", ::submit, gradient = true)
     }
 }
 
@@ -250,19 +218,26 @@ fun PickBuddyScreen(
 
     OnboardingScaffold(
         step = if (editing) null else 1,
-        title = "Pick your house buddy",
+        title = "Pick Your House Buddy",
         subtitle = "Roommates see it next to your name.",
         onBack = onBack,
+        titleStyle = RoomieType.onboardingTitle.copy(fontWeight = FontWeight.Bold, lineHeight = 32.sp),
         bottom = {
-            PrimaryButton(if (editing) "Save" else "Next", { vm.pickBuddy(picked); onNext() })
+            PrimaryButton(if (editing) "Save" else "Next", { vm.pickBuddy(picked); onNext() }, gradient = true)
             if (!editing) {
-                TextAction("Skip for now", onNext, Modifier.align(Alignment.CenterHorizontally).offset(y = (-6).dp))
+                // Skipping assigns a random buddy; it can be changed any time from Me.
+                TextAction(
+                    "Skip for Now",
+                    { vm.pickBuddy(Buddy.entries.random()); onNext() },
+                    Modifier.align(Alignment.CenterHorizontally).offset(y = (-6).dp),
+                    style = RoomieType.linkButton.copy(fontSize = 16.sp, lineHeight = 20.sp),
+                )
             }
         },
     ) {
         Column(Modifier.fillMaxWidth().padding(top = 2.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            BuddyAvatar(picked, 112.dp, contentDescription = "Your buddy: ${picked.label}")
-            Text(session.firstName, style = RoomieType.sectionTitle.copy(fontSize = 17.sp))
+            BuddyAvatar(picked, 88.dp, contentDescription = "Your buddy: ${picked.label}")
+            Text(session.firstName, style = RoomieType.sectionTitle.copy(lineHeight = 20.sp))
         }
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             listOf(Buddy.entries.take(3), Buddy.entries.drop(3)).forEach { row ->
@@ -271,12 +246,6 @@ fun PickBuddyScreen(
                 }
             }
         }
-        Text(
-            "You can change it any time in Me.",
-            style = RoomieType.bodySecondary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }
 
@@ -293,7 +262,7 @@ private fun BuddyOption(buddy: Buddy, selected: Boolean, onClick: () -> Unit) {
             Box(
                 Modifier
                     .size(88.dp)
-                    .border(3.dp, if (selected) BrandBrown else Color.Transparent, CircleShape)
+                    .border(2.dp, if (selected) BrandBrown else Color.Transparent, CircleShape)
                     .padding(6.dp),
             ) {
                 BuddyAvatar(buddy, 76.dp)
@@ -303,7 +272,7 @@ private fun BuddyOption(buddy: Buddy, selected: Boolean, onClick: () -> Unit) {
                 Box(
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .offset(x = (-2).dp, y = (-2).dp)
+                        .offset(x = (-5).dp, y = (-5).dp)
                         .size(26.dp)
                         .clip(CircleShape)
                         .background(BrandBrown)
@@ -316,7 +285,7 @@ private fun BuddyOption(buddy: Buddy, selected: Boolean, onClick: () -> Unit) {
         }
         Text(
             buddy.label,
-            style = RoomieType.rowTitle.copy(fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium),
+            style = RoomieType.rowTitle.copy(fontSize = 12.sp, lineHeight = 16.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium),
         )
     }
 }
@@ -327,7 +296,6 @@ private fun BuddyOption(buddy: Buddy, selected: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun SetupChoiceScreen(
-    preferJoin: Boolean,
     onStartHouse: () -> Unit,
     onJoined: () -> Unit,
     onBack: (() -> Unit)?,
@@ -335,7 +303,7 @@ fun SetupChoiceScreen(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val session = state.session ?: return
-    var join by rememberSaveable { mutableStateOf(preferJoin) }
+    var join by rememberSaveable { mutableStateOf(false) }
     var code by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -353,23 +321,23 @@ fun SetupChoiceScreen(
                     vm.startHouse()
                     onStartHouse()
                 }
-            })
+            }, gradient = true)
         },
     ) {
         ChoiceCard(
             selected = !join,
-            title = "Start a house",
+            title = "Start a House",
             body = "Name it, then add your roommates by NetID.",
             onSelect = { join = false; error = null },
         )
         ChoiceCard(
             selected = join,
-            title = "Join with an invite code",
+            title = "Join with an Invite Code",
             body = "A roommate already started the house? Enter their code and skip ahead.",
             onSelect = { join = true },
         ) {
             Column(Modifier.padding(start = 36.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                FieldLabel("Invite code")
+                FieldLabel("Invite Code", style = RoomieType.onboardingLabel)
                 RoomieTextField(
                     value = code,
                     onValueChange = { code = it.uppercase(); join = true; error = null },
@@ -394,14 +362,12 @@ private fun ChoiceCard(
     onSelect: () -> Unit,
     extra: (@Composable () -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(12.dp)
+    val shape = RoundedCornerShape(14.dp)
     Column(
         Modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(Surface)
-            .border(if (selected) 2.dp else 1.dp, if (selected) BrandBrown else Border, shape)
-            .padding(16.dp),
+            .glassSurface(shape, borderWidth = if (selected) 2.dp else 1.dp)
+            .padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(
@@ -419,8 +385,8 @@ private fun ChoiceCard(
                 if (selected) Box(Modifier.size(13.2.dp).background(BrandBrown, CircleShape))
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(title, style = RoomieType.sectionTitle.copy(fontSize = 17.sp))
-                Text(body, style = RoomieType.body.copy(color = TextSecondary, lineHeight = 19.6.sp))
+                Text(title, style = RoomieType.sectionTitle.copy(lineHeight = 20.sp))
+                Text(body, style = RoomieType.onboardingBody)
             }
         }
         extra?.invoke()
@@ -445,34 +411,31 @@ fun AddRoommatesScreen(onNext: () -> Unit, onBack: () -> Unit, vm: OnboardingVie
 
     OnboardingScaffold(
         step = 3,
-        title = "Amazing!",
+        title = "Exciting!",
         subtitle = "Add your roommates' NetIDs.",
         onBack = onBack,
-        bottom = { PrimaryButton("Next", onNext) },
+        bottom = { PrimaryButton("Next", onNext, gradient = true) },
     ) {
         house.members.filter { it.id != me }.forEach { roommate ->
-            val shape = RoundedCornerShape(10.dp)
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clip(shape)
-                    .background(Surface)
-                    .border(1.dp, Divider, shape)
+                    .glassSurface(RoundedCornerShape(14.dp))
                     .padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 BuddyAvatar(roommate.buddy, 40.dp)
                 Column(Modifier.weight(1f)) {
-                    Text(roommate.firstName, style = RoomieType.sectionTitle.copy(fontSize = 15.sp, lineHeight = 18.sp))
-                    Text(roommate.netId, style = RoomieType.bodySecondary)
+                    Text(roommate.firstName, style = RoomieType.sectionTitle.copy(lineHeight = 20.sp))
+                    Text(roommate.netId, style = RoomieType.onboardingNote)
                 }
                 MemberStatusPill(roommate.status, pendingLabel = "Invite sent")
                 IconAction(R.drawable.ic_close, "Remove ${roommate.firstName}", { vm.removeRoommate(roommate.id) }, iconSize = 18.dp)
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Bottom) {
-            LabeledField("Roommate NetID", Modifier.weight(1f)) {
+            LabeledField("Roommate NetID", Modifier.weight(1f), labelStyle = RoomieType.onboardingLabel) {
                 RoomieTextField(
                     value = netId,
                     onValueChange = { netId = it.trim(); error = null },
@@ -483,12 +446,19 @@ fun AddRoommatesScreen(onNext: () -> Unit, onBack: () -> Unit, vm: OnboardingVie
                     contentDescription = "Roommate NetID",
                 )
             }
-            InlineAddButton(::add, height = 50.dp, corner = 10.dp, enabled = netId.isNotBlank())
+            InlineAddButton(
+                ::add,
+                height = 50.dp,
+                corner = 12.dp,
+                enabled = netId.isNotBlank(),
+                gradient = true,
+                textStyle = RoomieType.primaryButton.copy(lineHeight = 20.sp),
+            )
         }
         ErrorText(error)
         Text(
             "They get an email to join and pick their own house buddy. You can keep going. The house updates as they accept.",
-            style = RoomieType.bodySecondary.copy(lineHeight = 18.2.sp),
+            style = RoomieType.onboardingNote,
         )
     }
 }
@@ -506,14 +476,15 @@ fun SetUpHouseScreen(onEnter: () -> Unit, onBack: () -> Unit, vm: OnboardingView
 
     OnboardingScaffold(
         step = 4,
-        title = "Set up your house",
+        title = "Set Up Your House",
         subtitle = null,
         onBack = onBack,
+        titleStyle = RoomieType.onboardingTitle.copy(letterSpacing = 0.sp),
         bottom = {
-            PrimaryButton("Enter your house", { vm.renameHouse(name); vm.finish(); onEnter() }, enabled = name.isNotBlank())
+            PrimaryButton("Enter Your House", { vm.renameHouse(name); vm.finish(); onEnter() }, enabled = name.isNotBlank(), gradient = true)
         },
     ) {
-        LabeledField("House name") {
+        LabeledField("House Name", labelStyle = RoomieType.onboardingLabel) {
             RoomieTextField(
                 value = name,
                 onValueChange = { name = it; vm.renameHouse(it) },
@@ -522,12 +493,12 @@ fun SetUpHouseScreen(onEnter: () -> Unit, onBack: () -> Unit, vm: OnboardingView
                 contentDescription = "House name",
             )
         }
-        InviteCodeCard(house.inviteCode)
-        ShareInviteButton(house.name, house.inviteCode)
+        InviteCodeCard(house.inviteCode, label = "Invite Code", glass = true)
+        ShareInviteButton(house.name, house.inviteCode, text = "Share Invite Link", glass = true)
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text("Roommates", style = RoomieType.sectionTitle, modifier = Modifier.padding(bottom = 4.dp))
             house.members.forEach { roommate ->
-                RoommateRow(roommate, isMe = roommate.id == me) {
+                RoommateRow(roommate, isMe = roommate.id == me, nameStyle = RoomieType.listTitle.copy(fontSize = 16.sp, lineHeight = 20.sp)) {
                     MemberStatusPill(roommate.status)
                 }
             }

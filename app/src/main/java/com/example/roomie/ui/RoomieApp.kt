@@ -32,9 +32,9 @@ import com.example.roomie.ui.theme.Background
 
 private object Routes {
     const val SIGN_IN = "signin"
-    const val BUDDY = "buddy?join={join}"
+    const val BUDDY = "buddy"
     const val EDIT_BUDDY = "buddy/edit"
-    const val SETUP = "setup?join={join}"
+    const val SETUP = "setup"
     const val ROOMMATES = "roommates"
     const val HOUSE = "house"
     const val HOME = "home"
@@ -45,8 +45,6 @@ private object Routes {
     const val SHOPPING = "shopping"
     const val ME = "me"
 
-    fun buddy(join: Boolean) = "buddy?join=$join"
-    fun setup(join: Boolean) = "setup?join=$join"
     fun notes(compose: Boolean = false) = "notes?compose=$compose"
     fun editChore(id: String) = "chores/edit/$id"
 }
@@ -84,20 +82,18 @@ fun RoomieApp() {
     ) { padding ->
         NavHost(nav, startDestination = start, modifier = Modifier.padding(padding)) {
             composable(Routes.SIGN_IN) {
-                SignInScreen(onSignedIn = { hasHouse, join ->
-                    if (hasHouse) nav.resetTo(Routes.HOME) else nav.navigate(Routes.buddy(join))
+                SignInScreen(onSignedIn = { hasHouse ->
+                    if (hasHouse) nav.resetTo(Routes.HOME) else nav.navigate(Routes.BUDDY)
                 })
             }
-            composable(Routes.BUDDY, arguments = listOf(navArgument("join") { type = NavType.BoolType; defaultValue = false })) {
-                val join = it.arguments?.getBoolean("join") ?: false
-                PickBuddyScreen(editing = false, onNext = { nav.navigate(Routes.setup(join)) }, onBack = { nav.popBackStack() })
+            composable(Routes.BUDDY) {
+                PickBuddyScreen(editing = false, onNext = { nav.navigate(Routes.SETUP) }, onBack = { nav.popBackStack() })
             }
             composable(Routes.EDIT_BUDDY) {
                 PickBuddyScreen(editing = true, onNext = { nav.popBackStack() }, onBack = { nav.popBackStack() })
             }
-            composable(Routes.SETUP, arguments = listOf(navArgument("join") { type = NavType.BoolType; defaultValue = false })) {
+            composable(Routes.SETUP) {
                 SetupChoiceScreen(
-                    preferJoin = it.arguments?.getBoolean("join") ?: false,
                     onStartHouse = { nav.navigate(Routes.ROOMMATES) },
                     onJoined = { nav.resetTo(Routes.HOME) },
                     onBack = if (nav.previousBackStackEntry != null) ({ nav.popBackStack() }) else null,
@@ -147,7 +143,7 @@ fun RoomieApp() {
                 MeScreen(
                     onChangePic = { nav.navigate(Routes.EDIT_BUDDY) },
                     onSignedOut = { nav.resetTo(Routes.SIGN_IN) },
-                    onLeftHouse = { nav.resetTo(Routes.setup(false)) },
+                    onLeftHouse = { nav.resetTo(Routes.SETUP) },
                 )
             }
         }

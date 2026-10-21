@@ -25,9 +25,13 @@ private fun inter(size: Float, weight: FontWeight, color: androidx.compose.ui.gr
 /** Named text styles used across Roomie screens, taken from the Figma frames. */
 object RoomieType {
     val screenTitle = inter(26f, FontWeight.Bold, BrandBrown).copy(lineHeight = 1.2.em)
-    val welcomeTitle = inter(32f, FontWeight.Bold, BrandBrown).copy(lineHeight = 36.8.sp)
-    val onboardingTitle = inter(30f, FontWeight.Bold, BrandBrown).copy(lineHeight = 34.5.sp, letterSpacing = (-0.3).sp)
-    val onboardingSubtitle = inter(20f, FontWeight.Medium, TextSecondary).copy(lineHeight = 23.sp, letterSpacing = (-0.3).sp)
+    val welcomeTitle = inter(28f, FontWeight.SemiBold, BrandBrown).copy(lineHeight = 36.sp)
+    val onboardingTitle = inter(28f, FontWeight.SemiBold, BrandBrown).copy(lineHeight = 36.sp, letterSpacing = (-0.3).sp)
+    val onboardingSubtitle = inter(16f, FontWeight.Medium, TextSecondary).copy(lineHeight = 20.sp, letterSpacing = (-0.3).sp)
+    val onboardingLabel = inter(12f, FontWeight.SemiBold, TextSecondary).copy(lineHeight = 16.sp)
+    val onboardingBody = inter(16f, FontWeight.Normal, TextSecondary).copy(lineHeight = 20.sp)
+    val onboardingNote = inter(12f, FontWeight.Normal, TextSecondary).copy(lineHeight = 16.sp)
+    val glassButton = inter(16f, FontWeight.SemiBold, BrandBrown).copy(lineHeight = 20.sp)
     val sheetTitle = inter(22f, FontWeight.Bold, BrandBrown)
     val sectionTitle = inter(16f, FontWeight.SemiBold).copy(lineHeight = 20.8.sp)
     val fieldLabel = inter(13f, FontWeight.SemiBold, TextSecondary)

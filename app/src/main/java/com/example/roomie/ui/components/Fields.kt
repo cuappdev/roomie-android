@@ -48,8 +48,8 @@ import com.example.roomie.ui.theme.TextPrimary
 import com.example.roomie.ui.theme.TextSecondary
 
 @Composable
-fun FieldLabel(text: String, modifier: Modifier = Modifier) {
-    Text(text, modifier = modifier, style = RoomieType.fieldLabel)
+fun FieldLabel(text: String, modifier: Modifier = Modifier, style: TextStyle = RoomieType.fieldLabel) {
+    Text(text, modifier = modifier, style = style)
 }
 
 /**
@@ -68,6 +68,7 @@ fun RoomieTextField(
     background: Color = Surface,
     textStyle: TextStyle = RoomieType.input,
     suffix: String? = null,
+    suffixStyle: TextStyle = RoomieType.body.copy(color = TextSecondary),
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -110,7 +111,7 @@ fun RoomieTextField(
                     if (value.isEmpty()) Text(placeholder, style = textStyle.copy(color = Placeholder))
                     inner()
                 }
-                if (suffix != null) Text(suffix, style = RoomieType.body.copy(color = TextSecondary))
+                if (suffix != null) Text(suffix, style = suffixStyle)
             }
         },
     )
@@ -118,9 +119,14 @@ fun RoomieTextField(
 
 /** Label above a field, matching the 6dp label gap used throughout the design. */
 @Composable
-fun LabeledField(label: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun LabeledField(
+    label: String,
+    modifier: Modifier = Modifier,
+    labelStyle: TextStyle = RoomieType.fieldLabel,
+    content: @Composable () -> Unit,
+) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        FieldLabel(label)
+        FieldLabel(label, style = labelStyle)
         content()
     }
 }

@@ -36,3 +36,16 @@ val TackBlue = Color(0xFF5F8FE0)
 
 // Warm brown used for sticky-note and sheet shadows (rgba(60,40,20,…) in the design).
 val ShadowBrown = Color(0xFF3C2814)
+
+// "Design for tech talk" refresh (onboarding): gradient buttons and warm glass cards.
+val ButtonGradientStart = Color(0xFF8A6846)
+val ButtonGradientMid = Color(0xFF8A633C)
+val ButtonGradientEnd = Color(0xFF7D4914)
+val ButtonBorder = Color(0x808A6846)
+// Glass card fill as rendered in Figma over the cream background.
+val GlassStart = Color(0xFFF3E9DA)
+val GlassEnd = Color(0xFFEEE3D3)
+val GlassBorder = Color(0xD9FFFFFF)
+val GlassButtonBorder = Color(0x59B5926F)
+// rgba(87,64,43,…) drop shadows in the refresh.
+val ShadowWarm = Color(0xFF57402B)

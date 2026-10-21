@@ -48,6 +48,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,11 +62,16 @@ import com.example.roomie.data.Roommate
 import com.example.roomie.ui.theme.Background
 import com.example.roomie.ui.theme.Border
 import com.example.roomie.ui.theme.BrandBrown
+import com.example.roomie.ui.theme.GlassBorder
+import com.example.roomie.ui.theme.GlassButtonBorder
+import com.example.roomie.ui.theme.GlassEnd
+import com.example.roomie.ui.theme.GlassStart
 import com.example.roomie.ui.theme.NoteGreen
 import com.example.roomie.ui.theme.PeachPill
 import com.example.roomie.ui.theme.RoomieType
 import com.example.roomie.ui.theme.Scrim
 import com.example.roomie.ui.theme.ShadowBrown
+import com.example.roomie.ui.theme.ShadowWarm
 import com.example.roomie.ui.theme.SuccessText
 import com.example.roomie.ui.theme.Surface
 import com.example.roomie.ui.theme.TextSecondary
@@ -209,19 +217,32 @@ fun DayTaskRow(day: String, task: String, who: String, modifier: Modifier = Modi
     }
 }
 
+/** Warm translucent card from the onboarding refresh: tan gradient, light border, soft shadow. */
+fun Modifier.glassSurface(shape: Shape, borderWidth: Dp = 1.dp, borderColor: Color = GlassBorder): Modifier = this
+    .shadow(3.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.06f), spotColor = ShadowWarm.copy(alpha = 0.06f))
+    .clip(shape)
+    .background(Brush.horizontalGradient(listOf(GlassStart, GlassEnd)))
+    .border(borderWidth, borderColor, shape)
+
 /** Roommate row with avatar, name and an optional status pill. */
 @Composable
-fun RoommateRow(roommate: Roommate, isMe: Boolean, modifier: Modifier = Modifier, trailing: @Composable () -> Unit = {}) {
+fun RoommateRow(
+    roommate: Roommate,
+    isMe: Boolean,
+    modifier: Modifier = Modifier,
+    nameStyle: TextStyle = RoomieType.listTitle,
+    trailing: @Composable () -> Unit = {},
+) {
     Row(modifier.fillMaxWidth().height(40.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
         BuddyAvatar(roommate.buddy, 32.dp)
-        Text(if (isMe) "${roommate.firstName} (you)" else roommate.firstName, style = RoomieType.listTitle, modifier = Modifier.weight(1f))
+        Text(if (isMe) "${roommate.firstName} (you)" else roommate.firstName, style = nameStyle, modifier = Modifier.weight(1f))
         trailing()
     }
 }
 
-/** Peach invite code card with a Copy button; also offers Android share for the invite link. */
+/** Peach invite code card with a Copy button. [glass] uses the refreshed onboarding style. */
 @Composable
-fun InviteCodeCard(code: String, modifier: Modifier = Modifier) {
+fun InviteCodeCard(code: String, modifier: Modifier = Modifier, label: String = "Invite code", glass: Boolean = false) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
@@ -235,14 +256,16 @@ fun InviteCodeCard(code: String, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("Invite code", style = RoomieType.rowMeta.copy(fontWeight = FontWeight.Medium))
-            Text(code, style = RoomieType.inviteCode)
+            Text(label, style = RoomieType.rowMeta.copy(fontWeight = FontWeight.Medium))
+            Text(code, style = if (glass) RoomieType.inviteCode.copy(fontSize = 20.sp, lineHeight = 24.sp) else RoomieType.inviteCode)
         }
         Row(
             Modifier
                 .height(44.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Surface)
+                .then(
+                    if (glass) Modifier.glassSurface(RoundedCornerShape(12.dp), borderColor = GlassButtonBorder)
+                    else Modifier.clip(RoundedCornerShape(10.dp)).background(Surface),
+                )
                 .clickable(role = Role.Button, onClickLabel = "Copy invite code") {
                     scope.launch {
                         clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("Roomie invite code", code)))
@@ -254,18 +277,25 @@ fun InviteCodeCard(code: String, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(painterResource(R.drawable.ic_copy), null, Modifier.size(16.dp), tint = Color.Unspecified)
-            Text("Copy", style = RoomieType.linkButton.copy(fontSize = 14.sp))
+            Text("Copy", style = if (glass) RoomieType.glassButton else RoomieType.linkButton.copy(fontSize = 14.sp))
         }
     }
 }
 
 @Composable
-fun ShareInviteButton(houseName: String, code: String, modifier: Modifier = Modifier) {
+fun ShareInviteButton(
+    houseName: String,
+    code: String,
+    modifier: Modifier = Modifier,
+    text: String = "Share invite link",
+    glass: Boolean = false,
+) {
     val context = LocalContext.current
     SecondaryButton(
-        text = "Share invite link",
+        text = text,
         icon = R.drawable.ic_link,
         modifier = modifier,
+        glass = glass,
         onClick = {
             val text = "Join ${houseName.ifBlank { "our house" }} on Roomie with invite code $code\nhttps://roomie.app/join/$code"
             val send = Intent(Intent.ACTION_SEND).apply {

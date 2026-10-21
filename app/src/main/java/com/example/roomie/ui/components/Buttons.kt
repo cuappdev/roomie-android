@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -29,12 +31,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomie.R
 import com.example.roomie.ui.theme.Border
+import com.example.roomie.ui.theme.ButtonBorder
+import com.example.roomie.ui.theme.ButtonGradientEnd
+import com.example.roomie.ui.theme.ButtonGradientMid
+import com.example.roomie.ui.theme.ButtonGradientStart
 import com.example.roomie.ui.theme.BrandBrown
 import com.example.roomie.ui.theme.Danger
+import com.example.roomie.ui.theme.GlassButtonBorder
 import com.example.roomie.ui.theme.RoomieType
+import com.example.roomie.ui.theme.ShadowWarm
 import com.example.roomie.ui.theme.Surface
 
-/** Full-width brown call to action ("Next", "Sign in", "Post note"). */
+private val ButtonGradient = Brush.horizontalGradient(
+    0f to ButtonGradientStart,
+    0.375f to ButtonGradientMid,
+    0.908f to ButtonGradientEnd,
+)
+
+/** Brown gradient fill with a half-alpha border and soft drop shadow (onboarding refresh). */
+private fun Modifier.gradientFill(shape: RoundedCornerShape): Modifier = this
+    .shadow(3.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.1f), spotColor = ShadowWarm.copy(alpha = 0.1f))
+    .clip(shape)
+    .background(ButtonGradient)
+    .border(1.dp, ButtonBorder, shape)
+
+/** Full-width brown call to action ("Next", "Sign in", "Post note"). [gradient] uses the refreshed style. */
 @Composable
 fun PrimaryButton(
     text: String,
@@ -42,6 +63,7 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     height: Dp = 52.dp,
+    gradient: Boolean = false,
 ) {
     val shape = RoundedCornerShape(12.dp)
     Box(
@@ -49,8 +71,7 @@ fun PrimaryButton(
             .fillMaxWidth()
             .height(height)
             .alpha(if (enabled) 1f else 0.5f)
-            .clip(shape)
-            .background(BrandBrown)
+            .then(if (gradient) Modifier.gradientFill(shape) else Modifier.clip(shape).background(BrandBrown))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -58,7 +79,7 @@ fun PrimaryButton(
     }
 }
 
-/** White outlined button ("Share invite link", "Sign out", "Delete"). */
+/** White outlined button ("Share invite link", "Sign out", "Delete"). [glass] uses the refreshed warm glass style. */
 @Composable
 fun SecondaryButton(
     text: String,
@@ -66,21 +87,23 @@ fun SecondaryButton(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
     contentColor: Color = BrandBrown,
+    glass: Boolean = false,
 ) {
     val shape = RoundedCornerShape(12.dp)
     Row(
         modifier
             .fillMaxWidth()
             .height(46.dp)
-            .clip(shape)
-            .background(Surface)
-            .border(BorderStroke(1.dp, Border), shape)
+            .then(
+                if (glass) Modifier.glassSurface(shape, borderColor = GlassButtonBorder)
+                else Modifier.clip(shape).background(Surface).border(BorderStroke(1.dp, Border), shape),
+            )
             .clickable(role = Role.Button, onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(painterResource(icon), null, Modifier.size(18.dp), tint = Color.Unspecified)
-        Text(text, style = RoomieType.linkButton.copy(color = contentColor))
+        Text(text, style = if (glass) RoomieType.glassButton.copy(color = contentColor) else RoomieType.linkButton.copy(color = contentColor))
     }
 }
 
@@ -139,19 +162,20 @@ fun InlineAddButton(
     height: Dp = 46.dp,
     corner: Dp = 8.dp,
     enabled: Boolean = true,
+    gradient: Boolean = false,
+    textStyle: TextStyle = RoomieType.primaryButton.copy(fontSize = 15.sp),
 ) {
     val shape = RoundedCornerShape(corner)
     Box(
         modifier
             .height(height)
             .alpha(if (enabled) 1f else 0.5f)
-            .clip(shape)
-            .background(BrandBrown)
+            .then(if (gradient) Modifier.gradientFill(shape) else Modifier.clip(shape).background(BrandBrown))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 22.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, style = RoomieType.primaryButton.copy(fontSize = 15.sp))
+        Text(text, style = textStyle)
     }
 }
 
