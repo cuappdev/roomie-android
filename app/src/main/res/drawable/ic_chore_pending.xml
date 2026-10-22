@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma "Chores / Circular completion" (pending): neutral circle with a brown check. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path
+        android:fillColor="#F1EEEE"
+        android:pathData="M16,0.6A15.4,15.4 0,1 1,16 31.4A15.4,15.4 0,1 1,16 0.6Z"
+        android:strokeColor="#DDD5CA"
+        android:strokeWidth="1.2" />
+    <path
+        android:fillColor="#8A6846"
+        android:pathData="M23.8125 11.1386L13.5729 21.8045C13.5135 21.8665 13.4429 21.9156 13.3652 21.9492C13.2875 21.9827 13.2042 22 13.1201 22C13.036 22 12.9527 21.9827 12.8751 21.9492C12.7974 21.9156 12.7268 21.8665 12.6673 21.8045L8.18755 17.1382C8.06746 17.0131 8 16.8434 8 16.6665C8 16.4896 8.06746 16.32 8.18755 16.1949C8.30763 16.0698 8.4705 15.9996 8.64033 15.9996C8.81015 15.9996 8.97302 16.0698 9.09311 16.1949L13.1201 20.3904L22.9069 10.1954C23.027 10.0703 23.1898 10 23.3597 10C23.5295 10 23.6924 10.0703 23.8125 10.1954C23.9325 10.3204 24 10.4901 24 10.667C24 10.8439 23.9325 11.0135 23.8125 11.1386Z" />
+</vector>

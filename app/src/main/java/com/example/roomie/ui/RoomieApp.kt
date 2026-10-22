@@ -109,7 +109,6 @@ fun RoomieApp() {
                 HomeScreen(
                     onOpenSettings = { nav.navigate(Routes.ME) { launchSingleTop = true } },
                     onOpenBoard = { nav.openTab(RoomieTab.Notes) },
-                    onAddNote = { nav.openTab(RoomieTab.Notes, Routes.notes(compose = true)) },
                     onOpenChores = { nav.openTab(RoomieTab.Chores) },
                 )
             }

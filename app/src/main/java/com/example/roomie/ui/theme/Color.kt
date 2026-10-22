@@ -49,3 +49,12 @@ val GlassBorder = Color(0xD9FFFFFF)
 val GlassButtonBorder = Color(0x59B5926F)
 // rgba(87,64,43,…) drop shadows in the refresh.
 val ShadowWarm = Color(0xFF57402B)
+// Home & profile refresh, sampled as rendered in Figma over cream / white.
+val GlassLight = Color(0xFFFCF3E5)
+val GlassOnWhite = Color(0xFFF2EDE7)
+val IdentityTint = Color(0xFFE3D5C4)
+val IdentityButton = Color(0xFFDCCDB8)
+val BrownOutline = Color(0x618A6846)
+val BrownOutlineSoft = Color(0x388A6846)
+val TanOutline = Color(0x4DB5926F)
+val DoneCardStart = Color(0xFFF5FBF5)

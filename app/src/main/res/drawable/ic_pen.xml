@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma "Pen" (361:9300) on the profile identity card. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <group
+        android:translateX="-16"
+        android:translateY="-14">
+        <path
+            android:pathData="M28.4567 16.0069L17.3841 27.0796L16 34L22.9204 32.6159L33.9931 21.5433L35.3772 20.1592C36.2076 19.3287 36.2076 18.2215 35.3772 17.391L32.609 14.6228C31.7785 13.7924 30.6713 13.7924 29.8408 14.6228L28.4567 16.0069ZM17.3841 27.0796L22.9204 32.6159M28.4567 16.0069L33.9931 21.5433"
+            android:strokeColor="#8A6846"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1.6" />
+    </group>
+</vector>

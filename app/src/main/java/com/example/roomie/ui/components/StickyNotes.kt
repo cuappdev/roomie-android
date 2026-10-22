@@ -210,12 +210,15 @@ fun CorkBoard(
     modifier: Modifier = Modifier,
     onEdit: (() -> Unit)? = null,
     editing: Boolean = false,
+    elevated: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(14.dp)
     Box(
         modifier
             .fillMaxWidth()
+            // Home refresh: 0 4 4 rgba(0,0,0,.25) under the frame.
+            .then(if (elevated) Modifier.shadow(4.dp, shape, clip = false) else Modifier)
             .clip(shape)
             .background(CorkInner)
             .border(12.dp, Tan, shape)

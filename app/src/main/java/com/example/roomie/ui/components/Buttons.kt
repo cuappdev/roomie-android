@@ -88,12 +88,14 @@ fun SecondaryButton(
     @DrawableRes icon: Int? = null,
     contentColor: Color = BrandBrown,
     glass: Boolean = false,
+    height: Dp = 46.dp,
+    textStyle: TextStyle = if (glass) RoomieType.glassButton else RoomieType.linkButton,
 ) {
     val shape = RoundedCornerShape(12.dp)
     Row(
         modifier
             .fillMaxWidth()
-            .height(46.dp)
+            .height(height)
             .then(
                 if (glass) Modifier.glassSurface(shape, borderColor = GlassButtonBorder)
                 else Modifier.clip(shape).background(Surface).border(BorderStroke(1.dp, Border), shape),
@@ -103,7 +105,7 @@ fun SecondaryButton(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) Icon(painterResource(icon), null, Modifier.size(18.dp), tint = Color.Unspecified)
-        Text(text, style = if (glass) RoomieType.glassButton.copy(color = contentColor) else RoomieType.linkButton.copy(color = contentColor))
+        Text(text, style = textStyle.copy(color = contentColor))
     }
 }
 
