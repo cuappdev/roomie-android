@@ -10,9 +10,17 @@ import java.util.Locale
 
 private val shortDate = DateTimeFormatter.ofPattern("EEE, MMM d", Locale.US)
 private val monthDay = DateTimeFormatter.ofPattern("MMM d", Locale.US)
+private val fullDate = DateTimeFormatter.ofPattern("EEE, MMM d, yyyy", Locale.US)
+private val monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.US)
 
 /** "Tue, Nov 17" */
 fun LocalDate.shortLabel(): String = format(shortDate)
+
+/** "Thu, Nov 19, 2026" */
+fun LocalDate.fullLabel(): String = format(fullDate)
+
+/** "November 2026" */
+fun java.time.YearMonth.label(): String = format(monthYear)
 
 /** "Nov 17" */
 fun LocalDate.monthDayLabel(): String = format(monthDay)

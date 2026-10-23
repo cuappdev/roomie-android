@@ -64,18 +64,23 @@ fun PrimaryButton(
     enabled: Boolean = true,
     height: Dp = 52.dp,
     gradient: Boolean = false,
+    corner: Dp = 12.dp,
+    @DrawableRes icon: Int? = null,
+    textStyle: TextStyle = RoomieType.primaryButton,
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    Box(
+    val shape = RoundedCornerShape(corner)
+    Row(
         modifier
             .fillMaxWidth()
             .height(height)
             .alpha(if (enabled) 1f else 0.5f)
             .then(if (gradient) Modifier.gradientFill(shape) else Modifier.clip(shape).background(BrandBrown))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, style = RoomieType.primaryButton)
+        if (icon != null) Icon(painterResource(icon), null, Modifier.size(16.dp), tint = Color.Unspecified)
+        Text(text, style = textStyle)
     }
 }
 
