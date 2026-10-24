@@ -97,7 +97,8 @@ fun StickyNote(
     pinned: Boolean,
     size: StickySize,
     tilt: Float,
-    onClick: () -> Unit,
+    /** Null when the caller handles taps itself (the board pairs taps with press-and-hold). */
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     showDueDate: Boolean = true,
     removable: Boolean = false,
@@ -115,7 +116,7 @@ fun StickyNote(
             .size(size.width, size.height)
             .shadow(3.dp, RectangleShape, clip = false, ambientColor = ShadowBrown, spotColor = ShadowBrown)
             .background(note.color.color())
-            .clickable(role = Role.Button, onClickLabel = "Read note", onClick = onClick)
+            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClickLabel = "Read note", onClick = onClick) else Modifier)
             .semantics(mergeDescendants = true) { contentDescription = description },
     ) {
         Column(Modifier.fillMaxSize().padding(start = 9.dp, end = 9.dp, top = 13.dp, bottom = 7.dp)) {

@@ -2,8 +2,10 @@ package com.example.roomie.data
 
 import androidx.annotation.DrawableRes
 import com.example.roomie.R
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 /** The "house buddy" avatar each roommate picks during onboarding. */
 enum class Buddy(val label: String, @param:DrawableRes val drawable: Int) {
@@ -57,11 +59,42 @@ data class Note(
 data class Chore(
     val id: String,
     val title: String,
-    val assigneeId: String,
+    val assigneeIds: List<String>,
     val dueDate: LocalDate,
-    val notes: String = "",
-    val done: Boolean = false,
-)
+    val completedOn: LocalDate? = null,
+    /** Set when this chore is one week of a [Rotation]. */
+    val rotationId: String? = null,
+) {
+    val done: Boolean get() = completedOn != null
+}
+
+/** Who a rotation includes and how many of them take it each week, from [fromWeek] (a Monday) on. */
+data class RotationPlan(val fromWeek: LocalDate, val memberIds: List<String>, val peoplePerWeek: Int)
+
+/**
+ * A chore that repeats weekly and hands itself to the next people in line. Edits add a new plan
+ * starting the following week, so past and current weeks keep their assignees.
+ */
+data class Rotation(
+    val id: String,
+    val title: String,
+    val dueDay: DayOfWeek,
+    /** Oldest first. */
+    val plans: List<RotationPlan>,
+) {
+    val startWeek: LocalDate get() = plans.first().fromWeek
+
+    fun planFor(week: LocalDate): RotationPlan? = plans.lastOrNull { !it.fromWeek.isAfter(week) }
+
+    fun assigneesFor(week: LocalDate): List<String> {
+        val plan = planFor(week) ?: return emptyList()
+        val members = plan.memberIds
+        if (members.isEmpty()) return emptyList()
+        val perWeek = plan.peoplePerWeek.coerceIn(1, members.size)
+        val index = ChronoUnit.WEEKS.between(plan.fromWeek, week).toInt()
+        return (0 until perWeek).map { members[(index * perWeek + it) % members.size] }
+    }
+}
 
 data class ShoppingItem(
     val id: String,
@@ -91,7 +124,11 @@ data class RoomieState(
     val session: Session? = null,
     val house: House? = null,
     val notes: List<Note> = emptyList(),
+    /** One-off chores; weekly ones come from [rotations]. */
     val chores: List<Chore> = emptyList(),
+    val rotations: List<Rotation> = emptyList(),
+    /** Completion date of each rotation week, keyed by [ChoreRules.rotationChoreId]. */
+    val rotationCompletions: Map<String, LocalDate> = emptyMap(),
     val shopping: List<ShoppingItem> = emptyList(),
 ) {
     fun member(id: String?): Roommate? = house?.members?.firstOrNull { it.id == id }

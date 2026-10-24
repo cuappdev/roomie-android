@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset Roomie / Navigation / profile (active) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <path
+        android:pathData="M13 6.25C13 7.90685 11.6569 9.25 10 9.25C8.34315 9.25 7 7.90685 7 6.25C7 4.59315 8.34315 3.25 10 3.25C11.6569 3.25 13 4.59315 13 6.25Z"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="2.1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3.75 17V15.5C3.75 13.8424 4.40848 12.2527 5.58058 11.0806C6.75269 9.90848 8.3424 9.25 10 9.25C11.6576 9.25 13.2473 9.90848 14.4194 11.0806C15.5915 12.2527 16.25 13.8424 16.25 15.5V17"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="2.1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

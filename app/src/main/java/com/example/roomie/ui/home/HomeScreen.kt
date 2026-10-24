@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,9 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -53,13 +47,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
-import com.example.roomie.data.Chore
+import com.example.roomie.data.ChoreRules
 import com.example.roomie.data.FakeRoomieRepository
 import com.example.roomie.data.Note
 import com.example.roomie.data.NoteRules
 import com.example.roomie.data.RoomieState
 import com.example.roomie.data.Roommate
 import com.example.roomie.ui.components.BuddyAvatar
+import com.example.roomie.ui.components.ChoreCard
 import com.example.roomie.ui.components.CorkBoard
 import com.example.roomie.ui.components.MoreNotesStack
 import com.example.roomie.ui.components.NoteDetailDialog
@@ -71,17 +66,13 @@ import com.example.roomie.ui.components.tiltFor
 import com.example.roomie.ui.theme.Background
 import com.example.roomie.ui.theme.Border
 import com.example.roomie.ui.theme.BrownOutlineSoft
-import com.example.roomie.ui.theme.DoneCardStart
 import com.example.roomie.ui.theme.GlassLight
-import com.example.roomie.ui.theme.NoteGreen
 import com.example.roomie.ui.theme.Divider
 import com.example.roomie.ui.theme.RoomieType
-import com.example.roomie.ui.theme.ShadowWarm
 import com.example.roomie.ui.theme.Surface
 import com.example.roomie.ui.theme.TextPrimary
 import com.example.roomie.ui.util.dayName
 import com.example.roomie.ui.util.monthAbbrev
-import com.example.roomie.ui.util.shortLabel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -101,6 +92,7 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onOpenBoard: () -> Unit,
     onOpenChores: () -> Unit,
+    onOpenChore: (String) -> Unit,
     vm: HomeViewModel = viewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -181,20 +173,17 @@ fun HomeScreen(
                     Text("This Week's Tasks", style = RoomieType.sectionTitle, modifier = Modifier.weight(1f).semantics { heading() })
                     TextAction("View All", onOpenChores, style = RoomieType.smallLink)
                 }
-                val endOfWeek = FakeRoomieRepository.weekOf(today).last()
-                val tasks = state.chores
-                    .filter { !it.dueDate.isBefore(today) && !it.dueDate.isAfter(endOfWeek) }
-                    .sortedWith(compareBy<Chore> { it.done }.thenBy { it.dueDate })
+                val tasks = ChoreRules.choresInWeek(state, ChoreRules.weekStart(today), today)
                 if (tasks.isEmpty()) {
-                    Text("Nothing else due this week.", style = RoomieType.bodySecondary)
+                    Text("Nothing due this week.", style = RoomieType.bodySecondary)
                 }
                 tasks.forEach { chore ->
                     ChoreCard(
                         chore = chore,
-                        assignee = state.member(chore.assigneeId),
+                        assignees = chore.assigneeIds.mapNotNull(state::member),
                         today = today,
                         onToggle = { vm.toggleChoreDone(chore.id) },
-                        onClick = onOpenChores,
+                        onClick = { onOpenChore(chore.id) },
                     )
                 }
             }
@@ -302,51 +291,5 @@ private fun SettingsGlassButton(onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(painterResource(R.drawable.ic_settings), "Settings", Modifier.size(20.dp), tint = Color.Unspecified)
-    }
-}
-
-/** "Chores / Card": title with a completion circle, assignee, and due line. */
-@Composable
-private fun ChoreCard(chore: Chore, assignee: Roommate?, today: LocalDate, onToggle: () -> Unit, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(10.dp)
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .shadow(4.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.1f), spotColor = ShadowWarm.copy(alpha = 0.1f))
-            .clip(shape)
-            .background(if (chore.done) Brush.horizontalGradient(listOf(DoneCardStart, Surface)) else SolidColor(Surface))
-            .border(0.7.dp, if (chore.done) NoteGreen else Border, shape)
-            .clickable(onClick = onClick)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Row(Modifier.fillMaxWidth().height(32.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(chore.title, style = RoomieType.choreTitle, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Icon(
-                painterResource(if (chore.done) R.drawable.ic_chore_done else R.drawable.ic_chore_pending),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .toggleable(value = chore.done, role = Role.Checkbox, onValueChange = { onToggle() })
-                    .semantics { contentDescription = "${chore.title} done" },
-                tint = Color.Unspecified,
-            )
-        }
-        if (assignee != null) {
-            Row(Modifier.fillMaxWidth().height(24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                BuddyAvatar(assignee.buddy, 24.dp)
-                Text(assignee.firstName, style = RoomieType.choreMeta, maxLines = 1)
-            }
-        }
-        Text(
-            when {
-                chore.done -> "Completed"
-                chore.dueDate == today -> "Due Today"
-                else -> "Due ${chore.dueDate.shortLabel()}"
-            },
-            style = RoomieType.choreMeta,
-            modifier = Modifier.height(18.dp).wrapContentHeight(Alignment.CenterVertically),
-        )
     }
 }

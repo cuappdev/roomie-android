@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generated from Figma asset ic_tab_cart.svg -->
+<!-- Generated from Figma asset Roomie / Navigation / cart -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="30dp"
-    android:height="30dp"
-    android:viewportWidth="30"
-    android:viewportHeight="30">
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
     <path
-        android:pathData="M10 27.5C10.6904 27.5 11.25 26.9404 11.25 26.25C11.25 25.5596 10.6904 25 10 25C9.30964 25 8.75 25.5596 8.75 26.25C8.75 26.9404 9.30964 27.5 10 27.5Z"
-        android:strokeColor="#767676"
-        android:strokeWidth="1.875"
+        android:pathData="M9 21C9 21.5523 8.55228 22 8 22C7.44772 22 7 21.5523 7 21C7 20.4477 7.44772 20 8 20C8.55228 20 9 20.4477 9 21Z"
+        android:strokeColor="#B5926F"
+        android:strokeWidth="1.6"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
-        android:pathData="M23.75 27.5C24.4404 27.5 25 26.9404 25 26.25C25 25.5596 24.4404 25 23.75 25C23.0596 25 22.5 25.5596 22.5 26.25C22.5 26.9404 23.0596 27.5 23.75 27.5Z"
-        android:strokeColor="#767676"
-        android:strokeWidth="1.875"
+        android:pathData="M20 21C20 21.5523 19.5523 22 19 22C18.4477 22 18 21.5523 18 21C18 20.4477 18.4477 20 19 20C19.5523 20 20 20.4477 20 21Z"
+        android:strokeColor="#B5926F"
+        android:strokeWidth="1.6"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
-        android:pathData="M2.5 2.5H6.25L9.625 18C9.74188 18.5732 10.0561 19.0872 10.5129 19.4527C10.9697 19.8181 11.5401 20.0118 12.125 20H21.875C22.4214 19.99 22.9495 19.8013 23.3784 19.4626C23.8073 19.124 24.1135 18.6542 24.25 18.125L26.25 8.75H6.375"
-        android:strokeColor="#767676"
-        android:strokeWidth="1.875"
+        android:pathData="M2 2H5L6.08871 7M6.08871 7L7.7 14.4C7.7935 14.8586 8.04485 15.2698 8.41028 15.5621C8.77572 15.8545 9.23211 16.0094 9.7 16H17.5C17.9371 15.992 18.3596 15.841 18.7027 15.5701C19.0459 15.2992 19.2908 14.9233 19.4 14.5L21 7H6.08871ZM6.08871 7H5.1"
+        android:strokeColor="#B5926F"
+        android:strokeWidth="1.6"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
 </vector>

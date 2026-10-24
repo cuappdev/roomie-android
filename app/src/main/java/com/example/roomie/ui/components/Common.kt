@@ -39,7 +39,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
@@ -50,6 +52,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -71,9 +74,9 @@ import com.example.roomie.ui.theme.NoteGreen
 import com.example.roomie.ui.theme.PeachPill
 import com.example.roomie.ui.theme.RoomieType
 import com.example.roomie.ui.theme.Scrim
-import com.example.roomie.ui.theme.ShadowBrown
 import com.example.roomie.ui.theme.ShadowWarm
 import com.example.roomie.ui.theme.SuccessText
+import com.example.roomie.ui.theme.Tan
 import com.example.roomie.ui.theme.Surface
 import com.example.roomie.ui.theme.TextSecondary
 import com.example.roomie.ui.util.toUtcMillis
@@ -115,38 +118,51 @@ fun SettingsAction(onClick: () -> Unit) {
     IconAction(R.drawable.ic_settings, "Settings", onClick, Modifier.padding(bottom = 0.dp))
 }
 
-enum class RoomieTab(val label: String, val icon: Int, val activeIcon: Int) {
+enum class RoomieTab(val label: String, val icon: Int, val activeIcon: Int, val iconSize: Dp = 24.dp) {
     Home("Home", R.drawable.ic_tab_home, R.drawable.ic_tab_home_active),
     Chores("Chores", R.drawable.ic_tab_chores, R.drawable.ic_tab_chores_active),
     Notes("Note board", R.drawable.ic_tab_notes, R.drawable.ic_tab_notes_active),
     Shopping("Shopping list", R.drawable.ic_tab_cart, R.drawable.ic_tab_cart_active),
+    Profile("Your space", R.drawable.ic_tab_profile, R.drawable.ic_tab_profile_active, 20.dp),
 }
 
-/** Four icon-only tabs; each keeps an accessible name. */
+private val NavGlass = Brush.verticalGradient(listOf(Color(0x29FFFCF7), Color(0x1CF0E0C7)))
+
+/**
+ * "Roomie / Navigation": five icon-only tabs on warm glass. The active tab gets a soft tan pill and
+ * a darker, heavier icon. Each tab keeps an accessible name.
+ */
 @Composable
 fun RoomieBottomBar(selected: RoomieTab?, onSelect: (RoomieTab) -> Unit, modifier: Modifier = Modifier) {
-    val shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
     Row(
         modifier
             .fillMaxWidth()
-            .shadow(6.dp, shape, clip = false, ambientColor = ShadowBrown.copy(alpha = 0.3f), spotColor = ShadowBrown.copy(alpha = 0.3f))
-            .background(Surface, shape)
+            .shadow(7.dp, RectangleShape, clip = false, ambientColor = ShadowWarm.copy(alpha = 0.1f), spotColor = ShadowWarm.copy(alpha = 0.1f))
+            .background(Background)
+            .background(NavGlass)
+            .drawBehind { drawLine(Color.White.copy(alpha = 0.85f), Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx()) }
             .navigationBarsPadding()
-            .padding(top = 4.dp, start = 12.dp, end = 12.dp, bottom = 4.dp),
+            .padding(start = 11.dp, end = 11.dp, top = 6.dp, bottom = 8.dp),
     ) {
         RoomieTab.entries.forEach { tab ->
             val isSelected = tab == selected
+            val shape = RoundedCornerShape(12.dp)
             Box(
                 Modifier
                     .weight(1f)
-                    .height(64.dp)
+                    .height(44.dp)
+                    .clip(shape)
+                    .then(
+                        if (isSelected) Modifier.background(Tan.copy(alpha = 0.17f)).border(1.dp, Color.White.copy(alpha = 0.8f), shape)
+                        else Modifier,
+                    )
                     .clickable(role = Role.Tab, onClickLabel = tab.label) { onSelect(tab) },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     painterResource(if (isSelected) tab.activeIcon else tab.icon),
                     contentDescription = tab.label,
-                    modifier = Modifier.size(30.dp),
+                    modifier = Modifier.size(tab.iconSize),
                     tint = Color.Unspecified,
                 )
             }

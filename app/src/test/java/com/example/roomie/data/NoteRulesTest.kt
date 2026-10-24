@@ -25,16 +25,17 @@ class NoteRulesTest {
     )
 
     @Test
-    fun boardOrder_isPinnedThenDueSoonThenNewest() {
+    fun boardOrder_isPinnedThenEverythingElseNewestFirst() {
         val notes = listOf(
             note("newest", 0),
             note("older-plain", 3),
             note("due-later", 5, due = today.plusDays(10)),
             note("due-soon", 6, due = today.plusDays(1)),
-            note("pinned", 9, pinnedUntil = today.plusDays(2)),
+            note("pinned-old", 9, pinnedUntil = today.plusDays(2)),
+            note("pinned-new", 1, pinnedUntil = today.plusDays(2)),
         )
         val order = NoteRules.boardOrder(notes, today).map { it.id }
-        assertEquals(listOf("pinned", "due-soon", "due-later", "newest", "older-plain"), order)
+        assertEquals(listOf("pinned-new", "pinned-old", "newest", "older-plain", "due-later", "due-soon"), order)
     }
 
     @Test

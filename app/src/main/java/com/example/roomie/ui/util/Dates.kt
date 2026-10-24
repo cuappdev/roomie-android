@@ -19,6 +19,22 @@ fun LocalDate.shortLabel(): String = format(shortDate)
 /** "Thu, Nov 19, 2026" */
 fun LocalDate.fullLabel(): String = format(fullDate)
 
+/** "Thursday, November 19" */
+fun LocalDate.longLabel(): String = format(DateTimeFormatter.ofPattern("EEEE, MMMM d", Locale.US))
+
+/** "Week of Nov 16, 2026" */
+fun LocalDate.weekOfLabel(): String = "Week of " + format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.US))
+
+/** "November 16 – 22", or "Nov 30 – Dec 6" across months. [short] always abbreviates the month. */
+fun LocalDate.weekRangeLabel(short: Boolean = false): String {
+    val end = plusDays(6)
+    return when {
+        month != end.month -> "${monthDayLabel()} – ${end.monthDayLabel()}"
+        short -> "${monthDayLabel()} – ${end.dayOfMonth}"
+        else -> "${month.getDisplayName(TextStyle.FULL, Locale.US)} $dayOfMonth – ${end.dayOfMonth}"
+    }
+}
+
 /** "November 2026" */
 fun java.time.YearMonth.label(): String = format(monthYear)
 

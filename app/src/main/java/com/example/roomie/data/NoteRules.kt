@@ -17,13 +17,14 @@ object NoteRules {
             !note.hasUpcomingDate(today) &&
             note.createdAt.toLocalDate().isBefore(today.minusDays(OLDER_AFTER_DAYS))
 
-    /** Pinned first, then due soon, then newest. Excludes older notes. */
+    /**
+     * Two sections, newest first in each: pinned notes, then everything else. A new note goes to the
+     * top of the unpinned section, still below the pins. Excludes older notes.
+     */
     fun boardOrder(notes: List<Note>, today: LocalDate): List<Note> {
         val active = notes.filterNot { isOlder(it, today) }
-        val pinned = active.filter { it.isPinned(today) }.sortedByDescending { it.createdAt }
-        val dated = active.filter { !it.isPinned(today) && it.hasUpcomingDate(today) }.sortedBy { it.dueDate }
-        val rest = active.filter { !it.isPinned(today) && !it.hasUpcomingDate(today) }.sortedByDescending { it.createdAt }
-        return pinned + dated + rest
+        val (pinned, rest) = active.partition { it.isPinned(today) }
+        return pinned.sortedByDescending { it.createdAt } + rest.sortedByDescending { it.createdAt }
     }
 
     fun older(notes: List<Note>, today: LocalDate): List<Note> =

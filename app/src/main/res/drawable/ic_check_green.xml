@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset Checkmark / scales with checkbox -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="9.75dp"
+    android:height="9.75dp"
+    android:viewportWidth="9.75"
+    android:viewportHeight="9.75">
+    <path
+        android:pathData="M2.13281 4.875L3.96094 6.70312L7.61719 3.04688"
+        android:strokeColor="#2F5A3A"
+        android:strokeWidth="1.4625"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

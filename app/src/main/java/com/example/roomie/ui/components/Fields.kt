@@ -211,21 +211,36 @@ private val WEEKDAY_LETTERS = listOf("M", "T", "W", "T", "F", "S", "S")
 
 /**
  * Inline month calendar from the "Leave a Note" design. Weeks start on Monday; days before [today]
- * are faded and can't be picked, and the trailing days of the next month fill out the last week.
+ * are faded and can't be picked unless [allowPast], and the trailing days of the next month fill out
+ * the last week. [framed] = false drops the card so it can sit inside another one (the chores week picker).
  */
 @Composable
-fun RoomieInlineCalendar(selected: LocalDate?, today: LocalDate, onPick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+fun RoomieInlineCalendar(
+    selected: LocalDate?,
+    today: LocalDate,
+    onPick: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    allowPast: Boolean = false,
+    framed: Boolean = true,
+) {
     var month by remember { mutableStateOf(YearMonth.from(selected ?: today)) }
-    val canGoBack = month.isAfter(YearMonth.from(today))
+    val canGoBack = allowPast || month.isAfter(YearMonth.from(today))
     val shape = RoundedCornerShape(12.dp)
     Column(
         modifier
             .fillMaxWidth()
-            .shadow(2.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.05f), spotColor = ShadowWarm.copy(alpha = 0.05f))
-            .clip(shape)
-            .background(Surface)
-            .border(0.5.dp, Border, shape)
-            .padding(16.dp),
+            .then(
+                if (framed) {
+                    Modifier
+                        .shadow(2.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.05f), spotColor = ShadowWarm.copy(alpha = 0.05f))
+                        .clip(shape)
+                        .background(Surface)
+                        .border(0.5.dp, Border, shape)
+                        .padding(16.dp)
+                } else {
+                    Modifier
+                },
+            ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Row(Modifier.fillMaxWidth().height(25.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -248,7 +263,7 @@ fun RoomieInlineCalendar(selected: LocalDate?, today: LocalDate, onPick: (LocalD
                     } else {
                         val day = first.plusDays(offset.toLong())
                         val isSelected = day == selected
-                        val enabled = !day.isBefore(today)
+                        val enabled = allowPast || !day.isBefore(today)
                         val cellShape = RoundedCornerShape(7.dp)
                         Box(
                             Modifier

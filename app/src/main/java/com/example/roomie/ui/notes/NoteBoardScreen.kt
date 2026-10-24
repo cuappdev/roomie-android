@@ -1,5 +1,6 @@
 package com.example.roomie.ui.notes
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,15 +31,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -87,6 +97,7 @@ class NotesViewModel(private val repo: FakeRoomieRepository = FakeRoomieReposito
     fun addNote(text: String, due: LocalDate?, pin: Boolean) = repo.addNote(text, due, pin)
     fun togglePin(id: String) = repo.togglePin(id)
     fun deleteNote(id: String) = repo.deleteNote(id)
+    fun updateNote(id: String, text: String, due: LocalDate?) = repo.updateNote(id, text, due)
 }
 
 @Composable
@@ -99,11 +110,18 @@ fun NoteBoardScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val me = state.session?.userId
     val today = vm.today()
+    val context = LocalContext.current
     var composing by rememberSaveable { mutableStateOf(false) }
     var showingOlder by rememberSaveable { mutableStateOf(false) }
-    var editing by rememberSaveable { mutableStateOf(false) }
     var showOrderInfo by remember { mutableStateOf(false) }
     var openNoteId by rememberSaveable { mutableStateOf<String?>(null) }
+    var editingId by rememberSaveable { mutableStateOf<String?>(null) }
+    var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
+    // Press-and-hold menu: the held note, where it sits, and the action under the finger.
+    var holdId by remember { mutableStateOf<String?>(null) }
+    var holdBounds by remember { mutableStateOf(Rect.Zero) }
+    var holdPointer by remember { mutableStateOf<Offset?>(null) }
+    var rootCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
     fun name(id: String) = state.member(id)?.firstName ?: "Someone"
 
     LaunchedEffect(startComposing) {
@@ -128,80 +146,147 @@ fun NoteBoardScreen(
     val older = NoteRules.older(state.notes, today)
     val shown = if (showingOlder) older else active
 
-    // The whole page scrolls, header included; only the nav bar stays put.
-    Column(Modifier.fillMaxSize().background(Background).verticalScroll(rememberScrollState())) {
-        RoomieHeader(
-            if (showingOlder) "Older Notes" else "Note Board",
-            background = Background,
-            titleStyle = RoomieType.greeting,
-            height = 76.dp,
-        ) { SettingsAction(onOpenSettings) }
-        Column(
-            Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            if (!showingOlder) {
-                PrimaryButton(
-                    "Add Note",
-                    { composing = true },
-                    height = 40.dp,
-                    gradient = true,
-                    corner = 10.dp,
-                    icon = R.drawable.ic_plus_white,
-                    textStyle = RoomieType.smallLink.copy(color = Surface),
-                )
-            }
-            CorkBoard(
-                Modifier.heightIn(min = 484.dp),
-                onEdit = if (showingOlder) null else ({ editing = !editing }),
-                editing = editing,
-            ) {
-                if (shown.isEmpty()) {
-                    Text(
-                        if (showingOlder) "No older notes." else "The board is empty. Add the first note for the house.",
-                        style = RoomieType.bodySecondary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(Alignment.Center).padding(40.dp),
-                    )
+    fun actionsFor(note: Note) =
+        if (note.authorId == me) listOf(HoldAction.Edit, HoldAction.Delete, HoldAction.Pin) else listOf(HoldAction.Pin)
+
+    fun pick(note: Note, action: HoldAction) {
+        holdId = null
+        holdPointer = null
+        when (action) {
+            HoldAction.Edit -> editingId = note.id
+            HoldAction.Delete -> deletingId = note.id
+            HoldAction.Pin -> {
+                if (!note.isPinned(today) && NoteRules.pinsInUse(state.notes, today) >= NoteRules.MAX_PINS) {
+                    Toast.makeText(context, "All ${NoteRules.MAX_PINS} pins are in use", Toast.LENGTH_SHORT).show()
                 } else {
-                    NoteGrid(
-                        notes = shown,
-                        today = today,
-                        name = ::name,
-                        removableBy = if (editing) me else null,
-                        onOpen = { openNoteId = it.id },
-                        onRemove = { vm.deleteNote(it.id) },
-                    )
+                    vm.togglePin(note.id)
                 }
-            }
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                if (showingOlder) {
-                    TextAction("Back to the board", { showingOlder = false }, style = RoomieType.linkButton.copy(fontSize = 14.sp))
-                } else if (older.isNotEmpty()) {
-                    Row(
-                        Modifier.height(44.dp).clickable(role = Role.Button) { showingOlder = true; editing = false },
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text("Older notes (${older.size})", style = RoomieType.linkButton.copy(fontSize = 14.sp))
-                        Icon(painterResource(R.drawable.ic_chevron_right_small), null, Modifier.size(16.dp), tint = Color.Unspecified)
-                    }
-                }
-                Box(Modifier.weight(1f))
-                IconAction(R.drawable.ic_info, "How notes are ordered", { showOrderInfo = true }, iconSize = 20.dp)
             }
         }
+    }
+
+    Box(Modifier.fillMaxSize().onGloballyPositioned { rootCoords = it }) {
+        // The whole page scrolls, header included; only the nav bar stays put.
+        Column(Modifier.fillMaxSize().background(Background).verticalScroll(rememberScrollState())) {
+            RoomieHeader(
+                if (showingOlder) "Older Notes" else "Note Board",
+                background = Background,
+                titleStyle = RoomieType.greeting,
+                height = 76.dp,
+            ) { SettingsAction(onOpenSettings) }
+            Column(
+                Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                if (!showingOlder) {
+                    PrimaryButton(
+                        "Add Note",
+                        { composing = true },
+                        height = 40.dp,
+                        gradient = true,
+                        corner = 10.dp,
+                        icon = R.drawable.ic_plus_white,
+                        textStyle = RoomieType.smallLink.copy(color = Surface),
+                    )
+                }
+                CorkBoard(Modifier.heightIn(min = 484.dp)) {
+                    if (shown.isEmpty()) {
+                        Text(
+                            if (showingOlder) "No older notes." else "The board is empty. Add the first note for the house.",
+                            style = RoomieType.bodySecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center).padding(40.dp),
+                        )
+                    } else {
+                        NoteGrid(
+                            notes = shown,
+                            today = today,
+                            name = ::name,
+                            hiddenId = holdId,
+                            onOpen = { openNoteId = it.id },
+                            onHoldStart = { note, coords ->
+                                val root = rootCoords ?: return@NoteGrid
+                                holdBounds = coords.boundsIn(root)
+                                holdPointer = null
+                                holdId = note.id
+                            },
+                            onHoldMove = { coords, position ->
+                                val root = rootCoords ?: return@NoteGrid
+                                holdPointer = root.localPositionOf(coords, position)
+                            },
+                            onHoldEnd = { note ->
+                                val root = rootCoords
+                                val targets = if (root != null) holdTargetsPx(holdBounds, root.size.width.toFloat(), actionsFor(note), context.resources.displayMetrics.density) else emptyMap()
+                                val target = holdPointer?.let { nearestTarget(targets, it, 44 * context.resources.displayMetrics.density) }
+                                holdPointer = null
+                                if (target != null) pick(note, target)
+                            },
+                        )
+                    }
+                }
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    if (showingOlder) {
+                        TextAction("Back to the board", { showingOlder = false }, style = RoomieType.linkButton.copy(fontSize = 14.sp))
+                    } else if (older.isNotEmpty()) {
+                        Row(
+                            Modifier.height(44.dp).clickable(role = Role.Button) { showingOlder = true },
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text("Older notes (${older.size})", style = RoomieType.linkButton.copy(fontSize = 14.sp))
+                            Icon(painterResource(R.drawable.ic_chevron_right_small), null, Modifier.size(16.dp), tint = Color.Unspecified)
+                        }
+                    }
+                    Box(Modifier.weight(1f))
+                    IconAction(R.drawable.ic_info, "How the board works", { showOrderInfo = true }, iconSize = 20.dp)
+                }
+            }
+        }
+
+        val held = state.notes.firstOrNull { it.id == holdId }
+        if (held != null) {
+            val targets = holdTargets(holdBounds, rootCoords?.size?.width?.toFloat() ?: 0f, actionsFor(held))
+            val radius = with(LocalDensity.current) { 44.dp.toPx() }
+            HoldOverlay(
+                note = held,
+                authorName = name(held.authorId),
+                pinned = held.isPinned(today),
+                size = boardNoteSize(shown.size),
+                bounds = holdBounds,
+                targets = targets,
+                highlighted = holdPointer?.let { nearestTarget(targets, it, radius) },
+                onPick = { pick(held, it) },
+                onDismiss = { holdId = null; holdPointer = null },
+            )
+        }
+
+        val editing = state.notes.firstOrNull { it.id == editingId }
+        if (editing != null) {
+            InlineNoteEditor(
+                note = editing,
+                authorName = name(editing.authorId),
+                today = today,
+                onCancel = { editingId = null },
+                onSave = { text, due -> vm.updateNote(editing.id, text, due); editingId = null },
+            )
+        }
+    }
+
+    val deleting = state.notes.firstOrNull { it.id == deletingId }
+    if (deleting != null) {
+        DeleteNoteDialog(deleting, onCancel = { deletingId = null }, onDelete = { vm.deleteNote(deleting.id); deletingId = null })
     }
 
     if (showOrderInfo) {
         AlertDialog(
             onDismissRequest = { showOrderInfo = false },
             containerColor = Background,
-            title = { Text("How notes are ordered", style = RoomieType.sheetTitle) },
+            title = { Text("How the board works", style = RoomieType.sheetTitle) },
             text = {
                 Text(
-                    "Pinned notes come first (up to 3, and pins last 7 days). Then notes with an upcoming due date, " +
-                        "soonest first, then the newest notes. Unpinned notes without an upcoming date move to Older notes after 14 days.",
+                    "Pinned notes stay at the top (up to 3, and pins last 7 days). Everything else is newest first. " +
+                        "Notes stay on the board for 14 days unless they have an upcoming date, then move to Older notes.\n\n" +
+                        "Press and hold a note to edit, delete or pin it.",
                     style = RoomieType.body,
                 )
             },
@@ -224,37 +309,56 @@ fun NoteBoardScreen(
     }
 }
 
+private fun boardNoteSize(count: Int) = if (count <= 6) StickySize.Large else StickySize.Medium
+
 /**
  * Two roomy columns when the board is light, three when it fills up. The board grows with its
- * notes and the page scrolls, so nothing is hidden.
+ * notes and the page scrolls, so nothing is hidden. Each note opens on tap and lifts into the
+ * action menu on press-and-hold.
  */
 @Composable
 private fun NoteGrid(
     notes: List<Note>,
     today: LocalDate,
     name: (String) -> String,
-    removableBy: String?,
+    hiddenId: String?,
     onOpen: (Note) -> Unit,
-    onRemove: (Note) -> Unit,
+    onHoldStart: (Note, LayoutCoordinates) -> Unit,
+    onHoldMove: (LayoutCoordinates, Offset) -> Unit,
+    onHoldEnd: (Note) -> Unit,
 ) {
-    val size = if (notes.size <= 6) StickySize.Large else StickySize.Medium
+    val size = boardNoteSize(notes.size)
     val columns = if (size == StickySize.Large) 2 else 3
     val rowHeight = if (size == StickySize.Large) 150.dp else 122.dp
+    val latestStart by rememberUpdatedState(onHoldStart)
+    val latestMove by rememberUpdatedState(onHoldMove)
+    val latestEnd by rememberUpdatedState(onHoldEnd)
+    val latestOpen by rememberUpdatedState(onOpen)
     Column(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
         notes.chunked(columns).forEachIndexed { r, row ->
             Row(Modifier.fillMaxWidth().height(rowHeight)) {
                 repeat(columns) { c ->
                     Box(Modifier.weight(1f).height(rowHeight), contentAlignment = Alignment.Center) {
                         val note = row.getOrNull(c) ?: return@Box
+                        var coords by remember { mutableStateOf<LayoutCoordinates?>(null) }
                         StickyNote(
                             note = note,
                             authorName = name(note.authorId),
                             pinned = note.isPinned(today),
                             size = size,
                             tilt = tiltFor(size, r * columns + c),
-                            onClick = { onOpen(note) },
-                            removable = removableBy != null && note.authorId == removableBy,
-                            onRemove = { onRemove(note) },
+                            onClick = null,
+                            modifier = Modifier
+                                .onGloballyPositioned { coords = it }
+                                .alpha(if (note.id == hiddenId) 0f else 1f)
+                                .semantics { onClick(label = "Read note") { latestOpen(note); true } }
+                                .tapOrHold(
+                                    key = note.id,
+                                    onTap = { latestOpen(note) },
+                                    onHoldStart = { coords?.let { latestStart(note, it) } },
+                                    onHoldMove = { p -> coords?.let { latestMove(it, p) } },
+                                    onHoldEnd = { latestEnd(note) },
+                                ),
                         )
                     }
                 }

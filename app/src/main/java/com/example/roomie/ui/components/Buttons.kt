@@ -42,7 +42,8 @@ import com.example.roomie.ui.theme.RoomieType
 import com.example.roomie.ui.theme.ShadowWarm
 import com.example.roomie.ui.theme.Surface
 
-private val ButtonGradient = Brush.horizontalGradient(
+/** The brand brown gradient used by primary buttons and the rotation header cards. */
+val BrandGradient = Brush.horizontalGradient(
     0f to ButtonGradientStart,
     0.375f to ButtonGradientMid,
     0.908f to ButtonGradientEnd,
@@ -52,7 +53,7 @@ private val ButtonGradient = Brush.horizontalGradient(
 private fun Modifier.gradientFill(shape: RoundedCornerShape): Modifier = this
     .shadow(3.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.1f), spotColor = ShadowWarm.copy(alpha = 0.1f))
     .clip(shape)
-    .background(ButtonGradient)
+    .background(BrandGradient)
     .border(1.dp, ButtonBorder, shape)
 
 /** Full-width brown call to action ("Next", "Sign in", "Post note"). [gradient] uses the refreshed style. */

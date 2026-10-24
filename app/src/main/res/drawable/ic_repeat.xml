@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset Roomie / Icon / Repeat -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:pathData="M3 6C3.17534 5.03109 3.63286 4.13552 4.31518 3.42561C4.99749 2.71569 5.87423 2.22304 6.83543 2.00944C7.79663 1.79584 8.7995 1.8708 9.71827 2.22492C10.637 2.57903 11.4308 3.19654 12 4L13 6M9 6H13V2M13 10C12.8247 10.9689 12.3671 11.8645 11.6848 12.5744C11.0025 13.2843 10.1258 13.777 9.16457 13.9906C8.20337 14.2042 7.2005 14.1292 6.28173 13.7751C5.36296 13.421 4.5692 12.8035 4 12L3 10M7 10H3V14"
+        android:strokeColor="#8A6846"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

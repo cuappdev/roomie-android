@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from Figma asset Icon / Edit (tinted at runtime: white at rest, brown when highlighted) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="26.88"
+    android:viewportHeight="26.88">
+    <path
+        android:pathData="M17.92 3.36L22.4 7.84M17.92 3.36L19.04 2.24C19.6341 1.64592 20.4398 1.31216 21.28 1.31216C22.1202 1.31216 22.9259 1.64592 23.52 2.24C24.1141 2.83408 24.4478 3.63984 24.4478 4.48C24.4478 5.32016 24.1141 6.12592 23.52 6.72L22.4 7.84M17.92 3.36L4.48 16.8L3.36 23.52L4.48 22.4L8.96 21.28L22.4 7.84M22.4 7.84L23.52 8.96"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.904"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

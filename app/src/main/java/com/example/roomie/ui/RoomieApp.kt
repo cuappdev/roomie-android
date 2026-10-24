@@ -15,8 +15,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.roomie.data.FakeRoomieRepository
+import com.example.roomie.ui.chores.ChoreDetailScreen
 import com.example.roomie.ui.chores.ChoresScreen
-import com.example.roomie.ui.chores.ChoreEditorScreen
+import com.example.roomie.ui.chores.EditRotationScreen
+import com.example.roomie.ui.chores.ManageRotationsScreen
 import com.example.roomie.ui.components.RoomieBottomBar
 import com.example.roomie.ui.components.RoomieTab
 import com.example.roomie.ui.home.HomeScreen
@@ -39,14 +41,16 @@ private object Routes {
     const val HOUSE = "house"
     const val HOME = "home"
     const val CHORES = "chores"
-    const val NEW_CHORE = "chores/new"
-    const val EDIT_CHORE = "chores/edit/{id}"
+    const val CHORE = "chores/chore/{id}"
+    const val ROTATIONS = "chores/rotations"
+    const val ROTATION = "chores/rotations/{id}"
     const val NOTES = "notes?compose={compose}"
     const val SHOPPING = "shopping"
     const val ME = "me"
 
     fun notes(compose: Boolean = false) = "notes?compose=$compose"
-    fun editChore(id: String) = "chores/edit/$id"
+    fun chore(id: String) = "chores/chore/$id"
+    fun rotation(id: String) = "chores/rotations/$id"
 }
 
 private const val COMPOSE_HANDLED = "composeHandled"
@@ -54,8 +58,12 @@ private const val COMPOSE_HANDLED = "composeHandled"
 private val TAB_ROUTES = mapOf(
     Routes.HOME to RoomieTab.Home,
     Routes.CHORES to RoomieTab.Chores,
+    Routes.CHORE to RoomieTab.Chores,
+    Routes.ROTATIONS to RoomieTab.Chores,
+    Routes.ROTATION to RoomieTab.Chores,
     Routes.NOTES to RoomieTab.Notes,
     Routes.SHOPPING to RoomieTab.Shopping,
+    Routes.ME to RoomieTab.Profile,
 )
 
 @Composable
@@ -71,7 +79,7 @@ fun RoomieApp() {
     }
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
-    val showBar = route in TAB_ROUTES.keys || route == Routes.ME
+    val showBar = route in TAB_ROUTES.keys
 
     Scaffold(
         containerColor = Background,
@@ -107,23 +115,31 @@ fun RoomieApp() {
             }
             composable(Routes.HOME) {
                 HomeScreen(
-                    onOpenSettings = { nav.navigate(Routes.ME) { launchSingleTop = true } },
+                    onOpenSettings = { nav.openTab(RoomieTab.Profile) },
                     onOpenBoard = { nav.openTab(RoomieTab.Notes) },
                     onOpenChores = { nav.openTab(RoomieTab.Chores) },
+                    onOpenChore = { id -> nav.navigate(Routes.chore(id)) },
                 )
             }
             composable(Routes.CHORES) {
                 ChoresScreen(
-                    onOpenSettings = { nav.navigate(Routes.ME) { launchSingleTop = true } },
-                    onAddChore = { nav.navigate(Routes.NEW_CHORE) },
-                    onEditChore = { id -> nav.navigate(Routes.editChore(id)) },
+                    onOpenSettings = { nav.openTab(RoomieTab.Profile) },
+                    onOpenChore = { id -> nav.navigate(Routes.chore(id)) },
+                    onManageRotations = { nav.navigate(Routes.ROTATIONS) },
                 )
             }
-            composable(Routes.NEW_CHORE) {
-                ChoreEditorScreen(choreId = null, onDone = { nav.popBackStack() })
+            composable(Routes.CHORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) {
+                ChoreDetailScreen(
+                    choreId = it.arguments?.getString("id").orEmpty(),
+                    onBack = { nav.popBackStack() },
+                    onViewRotation = { id -> nav.navigate(Routes.rotation(id)) },
+                )
             }
-            composable(Routes.EDIT_CHORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) {
-                ChoreEditorScreen(choreId = it.arguments?.getString("id"), onDone = { nav.popBackStack() })
+            composable(Routes.ROTATIONS) {
+                ManageRotationsScreen(onBack = { nav.popBackStack() }, onOpenRotation = { id -> nav.navigate(Routes.rotation(id)) })
+            }
+            composable(Routes.ROTATION, arguments = listOf(navArgument("id") { type = NavType.StringType })) {
+                EditRotationScreen(rotationId = it.arguments?.getString("id").orEmpty(), onBack = { nav.popBackStack() })
             }
             composable(Routes.NOTES, arguments = listOf(navArgument("compose") { type = NavType.BoolType; defaultValue = false })) {
                 // The handled flag lives in savedStateHandle so it survives the tab being saved and
@@ -132,11 +148,11 @@ fun RoomieApp() {
                     startComposing = (it.arguments?.getBoolean("compose") ?: false) &&
                         it.savedStateHandle.get<Boolean>(COMPOSE_HANDLED) != true,
                     onComposeHandled = { it.savedStateHandle[COMPOSE_HANDLED] = true },
-                    onOpenSettings = { nav.navigate(Routes.ME) { launchSingleTop = true } },
+                    onOpenSettings = { nav.openTab(RoomieTab.Profile) },
                 )
             }
             composable(Routes.SHOPPING) {
-                ShoppingScreen(onOpenSettings = { nav.navigate(Routes.ME) { launchSingleTop = true } })
+                ShoppingScreen(onOpenSettings = { nav.openTab(RoomieTab.Profile) })
             }
             composable(Routes.ME) {
                 MeScreen(
@@ -150,8 +166,6 @@ fun RoomieApp() {
 }
 
 private fun NavHostController.openTab(tab: RoomieTab, route: String? = null) {
-    // Me sits on top of whichever tab opened it; close it so it isn't saved as part of that tab.
-    if (currentDestination?.route == Routes.ME) popBackStack()
     if (tab == RoomieTab.Home) {
         // Home is the root and never leaves the stack, so just pop back to it. Navigating to it with
         // restoreState would bring back whatever tab was saved when popping up to Home.
@@ -163,6 +177,7 @@ private fun NavHostController.openTab(tab: RoomieTab, route: String? = null) {
         RoomieTab.Chores -> Routes.CHORES
         RoomieTab.Notes -> Routes.notes()
         RoomieTab.Shopping -> Routes.SHOPPING
+        RoomieTab.Profile -> Routes.ME
     }
     navigate(target) {
         // Tabs sit on top of Home, so Back from any tab returns Home and Back from Home exits.

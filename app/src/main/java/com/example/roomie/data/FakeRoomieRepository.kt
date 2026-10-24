@@ -185,6 +185,13 @@ object FakeRoomieRepository {
         _state.update { it.copy(notes = it.notes + note) }
     }
 
+    fun updateNote(id: String, text: String, dueDate: LocalDate?) {
+        if (text.isBlank()) return
+        _state.update { s ->
+            s.copy(notes = s.notes.map { if (it.id == id) it.copy(text = text.trim().take(NoteRules.MAX_LENGTH), dueDate = dueDate) else it })
+        }
+    }
+
     fun deleteNote(id: String) = _state.update { s -> s.copy(notes = s.notes.filterNot { it.id == id }) }
 
     fun togglePin(id: String) = _state.update { s ->
@@ -204,30 +211,52 @@ object FakeRoomieRepository {
 
     // region Chores
 
-    fun addChore(title: String, assigneeId: String, dueDate: LocalDate, notes: String) {
-        if (title.isBlank()) return
-        val chore = Chore(UUID.randomUUID().toString(), title.trim(), assigneeId, dueDate, notes.trim())
+    fun addChore(title: String, assigneeIds: List<String>, dueDate: LocalDate) {
+        if (title.isBlank() || assigneeIds.isEmpty()) return
+        val chore = Chore(UUID.randomUUID().toString(), title.trim(), assigneeIds, dueDate)
         _state.update { it.copy(chores = it.chores + chore) }
     }
 
+    fun addRotation(title: String, dueDay: DayOfWeek, memberIds: List<String>, peoplePerWeek: Int, startWeek: LocalDate) {
+        if (title.isBlank() || memberIds.isEmpty()) return
+        val rotation = Rotation(
+            UUID.randomUUID().toString().replace("-", ""),
+            title.trim(),
+            dueDay,
+            listOf(RotationPlan(ChoreRules.weekStart(startWeek), memberIds, peoplePerWeek)),
+        )
+        _state.update { it.copy(rotations = it.rotations + rotation) }
+    }
+
+    /** Works for one-off chores and rotation weeks alike. */
     fun toggleChoreDone(id: String) = _state.update { s ->
-        s.copy(chores = s.chores.map { if (it.id == id) it.copy(done = !it.done) else it })
-    }
-
-    fun reassignChore(id: String, assigneeId: String) = _state.update { s ->
-        s.copy(chores = s.chores.map { if (it.id == id) it.copy(assigneeId = assigneeId) else it })
-    }
-
-    fun updateChore(id: String, title: String, assigneeId: String, dueDate: LocalDate, notes: String) {
-        if (title.isBlank()) return
-        _state.update { s ->
-            s.copy(chores = s.chores.map {
-                if (it.id == id) it.copy(title = title.trim(), assigneeId = assigneeId, dueDate = dueDate, notes = notes.trim()) else it
-            })
+        val today = today()
+        if (s.chores.any { it.id == id }) {
+            s.copy(chores = s.chores.map { if (it.id == id) it.copy(completedOn = if (it.done) null else today) else it })
+        } else {
+            val done = s.rotationCompletions.containsKey(id)
+            s.copy(rotationCompletions = if (done) s.rotationCompletions - id else s.rotationCompletions + (id to today))
         }
     }
 
     fun deleteChore(id: String) = _state.update { s -> s.copy(chores = s.chores.filterNot { it.id == id }) }
+
+    /** Changes take effect from [fromWeek]; earlier weeks keep their assignees. */
+    fun updateRotation(id: String, memberIds: List<String>, peoplePerWeek: Int, fromWeek: LocalDate) {
+        if (memberIds.isEmpty()) return
+        _state.update { s ->
+            s.copy(rotations = s.rotations.map {
+                if (it.id == id) ChoreRules.withPlan(it, ChoreRules.weekStart(fromWeek), memberIds, peoplePerWeek) else it
+            })
+        }
+    }
+
+    fun deleteRotation(id: String) = _state.update { s ->
+        s.copy(
+            rotations = s.rotations.filterNot { it.id == id },
+            rotationCompletions = s.rotationCompletions.filterKeys { !it.startsWith("rot_${id}_") },
+        )
+    }
 
     // endregion
 
@@ -332,18 +361,22 @@ object FakeRoomieRepository {
             note(17, "Lost a blue umbrella", mina, 16, NoteColor.Blue, Tack.DotBlue),
         )
 
-        // Weekly rota from the design (S M T W Th F S); this week and next so Upcoming is never empty.
-        val rota = mapOf(
-            DayOfWeek.SUNDAY to ("Grocery shopping" to jarmin),
-            DayOfWeek.MONDAY to ("Mop floors" to mina),
-            DayOfWeek.WEDNESDAY to ("Take out the trash!" to leah),
-            DayOfWeek.THURSDAY to ("Vacuum living room" to mihili),
-            DayOfWeek.FRIDAY to ("Scrub toilet" to stef),
-            DayOfWeek.SATURDAY to ("Laundry day" to leah),
+        // Rotations from the design, plus one-off chores spread over this week and next.
+        val week = ChoreRules.weekStart(today)
+        val rotations = listOf(
+            Rotation("recycling", "Take out recycling", DayOfWeek.THURSDAY, listOf(RotationPlan(week, listOf(mina, leah, mihili), 1))),
+            Rotation("bathroom", "Clean the bathroom", DayOfWeek.SATURDAY, listOf(RotationPlan(week.minusWeeks(2), listOf(stef, jarmin, leah, mihili), 1))),
+            Rotation("vacuum", "Vacuum living room", DayOfWeek.SUNDAY, listOf(RotationPlan(week.minusWeeks(1), listOf(leah, mina, jarmin, stef), 2))),
         )
-        val chores = (weekOf(today) + weekOf(today.plusWeeks(1))).mapNotNull { day ->
-            rota[day.dayOfWeek]?.let { (title, who) -> Chore("c$day", title, who, day, done = day.isBefore(today)) }
-        }
+        fun day(offset: Long) = week.plusDays(offset)
+        fun doneIfPast(date: LocalDate) = if (date.isBefore(today)) date else null
+        val chores = listOf(
+            Chore("c1", "Wipe kitchen counters", listOf(leah), day(4)),
+            Chore("c2", "Mop floors", listOf(mina), day(0), completedOn = doneIfPast(day(0))),
+            Chore("c3", "Grocery run", listOf(jarmin, leah), day(2), completedOn = doneIfPast(day(2))),
+            Chore("c4", "Defrost the freezer", listOf(mihili, stef), day(9)),
+            Chore("c5", "Laundry day", listOf(leah), day(12)),
+        )
 
         fun item(id: Int, name: String, by: String, hoursAgo: Long, qty: Int = 1, note: String = "", boughtBy: String? = null, boughtDaysAgo: Long? = null, couldntFind: String? = null) =
             ShoppingItem(
@@ -369,15 +402,14 @@ object FakeRoomieRepository {
             house = House("The Linden Loft", DEMO_INVITE_CODE, members, atStoreId = mina),
             notes = notes,
             chores = chores,
+            rotations = rotations,
+            // Last week's turns were finished, so nothing carries over on first launch.
+            rotationCompletions = listOf("bathroom", "vacuum").associate {
+                ChoreRules.rotationChoreId(it, week.minusWeeks(1)) to week.minusDays(2)
+            },
             shopping = shopping,
         )
     }
 
     // endregion
-
-    /** Sunday-start week containing [date], matching the S M T W Th F S chore list. */
-    fun weekOf(date: LocalDate): List<LocalDate> {
-        val start = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-        return (0L..6L).map { start.plusDays(it) }
-    }
 }
