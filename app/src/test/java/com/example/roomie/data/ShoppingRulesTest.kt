@@ -12,9 +12,9 @@ class ShoppingRulesTest {
         id = id,
         name = name,
         quantity = qty,
-        addedById = "lk452",
+        addedById = "lk552",
         addedAt = now.minusDays(40),
-        boughtById = boughtDaysAgo?.let { "mk482" },
+        boughtById = boughtDaysAgo?.let { "mtl79" },
         boughtAt = boughtDaysAgo?.let { now.minusDays(it) },
     )
 

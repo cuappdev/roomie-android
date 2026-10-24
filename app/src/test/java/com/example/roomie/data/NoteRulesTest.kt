@@ -16,7 +16,7 @@ class NoteRulesTest {
     ) = Note(
         id = id,
         text = id,
-        authorId = "lk452",
+        authorId = "lk552",
         createdAt = today.atStartOfDay().minusDays(daysAgo).plusHours(12),
         dueDate = due,
         pinnedUntil = pinnedUntil,

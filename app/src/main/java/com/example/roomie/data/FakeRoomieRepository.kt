@@ -22,7 +22,7 @@ import java.util.UUID
  * update instantly, the way they would with a real-time backend. Data resets when the app
  * process dies.
  *
- * Sign in as `lk452` to land in the seeded demo house ("The Linden Loft"). Any other NetID is
+ * Sign in as `lk552` to land in the seeded demo house ("The Linden Loft"). Any other NetID is
  * treated as a new account and goes through onboarding; invite code `LOFT-4827` joins the demo
  * house.
  */
@@ -297,17 +297,17 @@ object FakeRoomieRepository {
 
     // region Seed data
 
-    private const val DEMO_OWNER_NET_ID = "lk452"
+    private const val DEMO_OWNER_NET_ID = "lk552"
     private const val DEMO_INVITE_CODE = "LOFT-4827"
     private val NET_ID = Regex("^[a-z]{2,3}[0-9]{1,5}$")
 
     /** Fake Cornell directory: NetID to (first name, last name, buddy). */
     private val DIRECTORY = mapOf(
-        "lk452" to Triple("Leah", "Kim", Buddy.Mug),
-        "mk482" to Triple("Mina", "Kaur", Buddy.Sock),
-        "mp217" to Triple("Mihili", "Perera", Buddy.Plant),
-        "jr905" to Triple("Jarmin", "Rahman", Buddy.Toaster),
-        "sl318" to Triple("Stef", "Lopez", Buddy.Teapot),
+        "lk552" to Triple("Leah", "Kim", Buddy.Mug),
+        "mtl79" to Triple("Mina", "Liu", Buddy.Sock),
+        "mnh49" to Triple("Mihili", "Herath", Buddy.Plant),
+        "jw2877" to Triple("Jarmin", "Weng", Buddy.Toaster),
+        "sar344" to Triple("Stef", "Rivera-Osorio", Buddy.Teapot),
     )
 
     private fun Session.toRoommate(status: MemberStatus) =
@@ -333,7 +333,7 @@ object FakeRoomieRepository {
             )
         }
         val me = members.first { it.netId == currentUserNetId }
-        val leah = "lk452"; val mina = "mk482"; val mihili = "mp217"; val jarmin = "jr905"; val stef = "sl318"
+        val leah = "lk552"; val mina = "mtl79"; val mihili = "mnh49"; val jarmin = "jw2877"; val stef = "sar344"
 
         fun note(id: Int, text: String, by: String, daysAgo: Long, color: NoteColor, tack: Tack, due: LocalDate? = null, pinned: Boolean = false) =
             Note("n$id", text, by, now.minusDays(daysAgo).minusMinutes(id.toLong()), due, if (pinned) today.plusDays(5) else null, color, tack)

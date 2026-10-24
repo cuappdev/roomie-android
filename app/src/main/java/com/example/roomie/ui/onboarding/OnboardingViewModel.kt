@@ -15,7 +15,7 @@ class OnboardingViewModel(private val repo: FakeRoomieRepository = FakeRoomieRep
 
     /** Returns an error message, or null on success. [onSignedIn] gets whether the account already has a house. */
     fun signIn(netId: String, password: String, onSignedIn: (hasHouse: Boolean) -> Unit): String? {
-        if (!repo.isValidNetId(netId)) return "Enter your Cornell NetID, like lk452."
+        if (!repo.isValidNetId(netId)) return "Enter your Cornell NetID, like jw2877."
         if (password.isBlank()) return "Enter your password."
         return when (val result = repo.signIn(netId, password)) {
             FakeRoomieRepository.SignInResult.Invalid -> "That NetID and password didn't work."

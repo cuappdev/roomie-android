@@ -175,7 +175,7 @@ fun SignInScreen(onSignedIn: (hasHouse: Boolean) -> Unit, vm: OnboardingViewMode
             RoomieTextField(
                 value = netId,
                 onValueChange = { netId = it.trim(); error = null },
-                placeholder = "e.g. lk452",
+                placeholder = "e.g. jw2877",
                 suffix = "@cornell.edu",
                 suffixStyle = RoomieType.input.copy(color = TextSecondary, lineHeight = 20.sp),
                 isError = error != null,
