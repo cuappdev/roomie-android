@@ -102,7 +102,8 @@ fun HomeScreen(
     var openNoteId by rememberSaveable { mutableStateOf<String?>(null) }
     fun name(id: String) = state.member(id)?.firstName ?: "Someone"
 
-    Column(Modifier.fillMaxSize().background(Background)) {
+    // The whole page scrolls, header included; only the nav bar stays put.
+    Column(Modifier.fillMaxSize().background(Background).verticalScroll(rememberScrollState())) {
         RoomieHeader(
             greeting(LocalTime.now()),
             background = Background,
@@ -112,10 +113,7 @@ fun HomeScreen(
             bottomPadding = 20.dp,
         ) { SettingsGlassButton(onOpenSettings) }
         Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp),
+            Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 28.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             RoommateStrip(house.members)

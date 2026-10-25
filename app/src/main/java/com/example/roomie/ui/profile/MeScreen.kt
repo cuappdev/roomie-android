@@ -82,13 +82,11 @@ fun MeScreen(onChangePic: () -> Unit, onSignedOut: () -> Unit, onLeftHouse: () -
     var renaming by remember { mutableStateOf(false) }
     var confirmLeave by remember { mutableStateOf(false) }
 
-    Column(Modifier.fillMaxSize().background(Background)) {
+    // The whole page scrolls, header included; only the nav bar stays put.
+    Column(Modifier.fillMaxSize().background(Background).verticalScroll(rememberScrollState())) {
         RoomieHeader("Your Space", background = Background, titleStyle = RoomieType.greeting, height = 76.dp)
         Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 24.dp),
+            Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             // Identity
