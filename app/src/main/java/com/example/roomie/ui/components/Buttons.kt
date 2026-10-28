@@ -103,7 +103,7 @@ fun SecondaryButton(
             .fillMaxWidth()
             .height(height)
             .then(
-                if (glass) Modifier.glassSurface(shape, borderColor = GlassButtonBorder)
+                if (glass) Modifier.glassSurface(shape, borderWidth = 1.dp, borderColor = GlassButtonBorder)
                 else Modifier.clip(shape).background(Surface).border(BorderStroke(1.dp, Border), shape),
             )
             .clickable(role = Role.Button, onClick = onClick),

@@ -263,7 +263,7 @@ fun GlassDropdownTrigger(
             .clip(shape)
             .background(Background)
             .background(GlassFaint)
-            .border(0.8.dp, Color.White.copy(alpha = 0.82f), shape)
+            .border(WhiteBorderWidth, Color.White.copy(alpha = 0.82f), shape)
             .clickable(role = Role.DropdownList, onClickLabel = contentDescription, onClick = onClick)
             .padding(start = startPadding, end = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -470,7 +470,7 @@ fun SegmentedControl(
             .clip(shape)
             .background(Background)
             .background(GlassFaint)
-            .border(1.dp, Color.White.copy(alpha = 0.85f), shape)
+            .border(WhiteBorderWidth, Color.White.copy(alpha = 0.85f), shape)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {

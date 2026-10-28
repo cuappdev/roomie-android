@@ -153,7 +153,7 @@ fun RoomieBottomBar(selected: RoomieTab?, onSelect: (RoomieTab) -> Unit, modifie
                     .height(44.dp)
                     .clip(shape)
                     .then(
-                        if (isSelected) Modifier.background(Tan.copy(alpha = 0.17f)).border(1.dp, Color.White.copy(alpha = 0.8f), shape)
+                        if (isSelected) Modifier.background(Tan.copy(alpha = 0.17f)).border(WhiteBorderWidth, Color.White.copy(alpha = 0.8f), shape)
                         else Modifier,
                     )
                     .clickable(role = Role.Tab, onClickLabel = tab.label) { onSelect(tab) },
@@ -246,8 +246,11 @@ fun DayTaskRow(day: String, task: String, who: String, modifier: Modifier = Modi
     }
 }
 
+/** White borders thinner than this disappear against the cream background. */
+val WhiteBorderWidth = 2.dp
+
 /** Warm translucent card from the onboarding refresh: tan gradient, light border, soft shadow. */
-fun Modifier.glassSurface(shape: Shape, borderWidth: Dp = 1.dp, borderColor: Color = GlassBorder): Modifier = this
+fun Modifier.glassSurface(shape: Shape, borderWidth: Dp = WhiteBorderWidth, borderColor: Color = GlassBorder): Modifier = this
     .shadow(3.dp, shape, ambientColor = ShadowWarm.copy(alpha = 0.06f), spotColor = ShadowWarm.copy(alpha = 0.06f))
     .clip(shape)
     .background(Brush.horizontalGradient(listOf(GlassStart, GlassEnd)))
@@ -298,7 +301,7 @@ fun InviteCodeCard(
             Modifier
                 .height(44.dp)
                 .then(
-                    if (glass) Modifier.glassSurface(RoundedCornerShape(12.dp), borderColor = GlassButtonBorder)
+                    if (glass) Modifier.glassSurface(RoundedCornerShape(12.dp), borderWidth = 1.dp, borderColor = GlassButtonBorder)
                     else Modifier.clip(RoundedCornerShape(10.dp)).background(Surface),
                 )
                 .clickable(role = Role.Button, onClickLabel = "Copy invite code") {

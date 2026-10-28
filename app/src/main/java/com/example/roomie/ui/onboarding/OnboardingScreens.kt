@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -310,7 +311,7 @@ fun SetupChoiceScreen(
     OnboardingScaffold(
         step = 2,
         title = "Hi ${session.firstName},",
-        subtitle = "how are you setting up?",
+        subtitle = "How are you setting up?",
         onBack = onBack,
         bottom = {
             PrimaryButton("Next", {
@@ -366,7 +367,7 @@ private fun ChoiceCard(
     Column(
         Modifier
             .fillMaxWidth()
-            .glassSurface(shape, borderWidth = if (selected) 2.dp else 1.dp)
+            .glassSurface(shape)
             .padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -384,9 +385,11 @@ private fun ChoiceCard(
             ) {
                 if (selected) Box(Modifier.size(13.2.dp).background(BrandBrown, CircleShape))
             }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(title, style = RoomieType.sectionTitle.copy(lineHeight = 20.sp))
-                Text(body, style = RoomieType.onboardingBody)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.3.dp)) {
+                // Figma centers text in its line box without trimming; match that so padding reads the same.
+                val figmaLines = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
+                Text(title, style = RoomieType.sectionTitle.copy(fontSize = 17.sp, lineHeight = 21.sp, lineHeightStyle = figmaLines))
+                Text(body, style = RoomieType.onboardingBody.copy(fontSize = 14.sp, lineHeight = 19.6.sp, lineHeightStyle = figmaLines))
             }
         }
         extra?.invoke()

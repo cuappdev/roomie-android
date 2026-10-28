@@ -76,6 +76,7 @@ import com.example.roomie.ui.components.SettingsAction
 import com.example.roomie.ui.components.SmallGlassButton
 import com.example.roomie.ui.components.TanButton
 import com.example.roomie.ui.components.TextAction
+import com.example.roomie.ui.components.WhiteBorderWidth
 import com.example.roomie.ui.theme.Background
 import com.example.roomie.ui.theme.Border
 import com.example.roomie.ui.theme.BrandBrown
@@ -217,7 +218,7 @@ private fun AddChoreBar(onClick: () -> Unit) {
             .clip(shape)
             .background(Background)
             .background(Brush.horizontalGradient(listOf(CalendarDayStart, CalendarDayEnd)))
-            .border(0.8.dp, Color.White.copy(alpha = 0.82f), shape)
+            .border(WhiteBorderWidth, Color.White.copy(alpha = 0.82f), shape)
             .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -77,6 +77,7 @@ import com.example.roomie.ui.components.RoomieInlineCalendar
 import com.example.roomie.ui.components.StickyNote
 import com.example.roomie.ui.components.StickySize
 import com.example.roomie.ui.components.TackView
+import com.example.roomie.ui.components.WhiteBorderWidth
 import com.example.roomie.ui.components.color
 import com.example.roomie.ui.theme.BrandBrown
 import com.example.roomie.ui.theme.CorkInner
@@ -213,7 +214,7 @@ fun HoldOverlay(
                     .shadow(6.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.24f), spotColor = Color.Black.copy(alpha = 0.24f))
                     .clip(CircleShape)
                     .background(if (active) Surface else BrandBrown)
-                    .border(1.dp, Color.White.copy(alpha = if (active) 1f else 0.24f), CircleShape)
+                    .border(WhiteBorderWidth, Color.White.copy(alpha = if (active) 1f else 0.24f), CircleShape)
                     .clickable(role = Role.Button, onClickLabel = action.label(pinned)) { onPick(action) },
                 contentAlignment = Alignment.Center,
             ) {
@@ -388,7 +389,7 @@ fun DeleteNoteDialog(note: Note, onCancel: () -> Unit, onDelete: () -> Unit) {
                         .height(44.dp)
                         .clip(buttonShape)
                         .background(Brush.horizontalGradient(listOf(GlassFaintStart, GlassFaintEnd)))
-                        .border(1.dp, Color.White.copy(alpha = 0.85f), buttonShape)
+                        .border(WhiteBorderWidth, Color.White.copy(alpha = 0.85f), buttonShape)
                         .clickable(role = Role.Button, onClick = onCancel),
                     contentAlignment = Alignment.Center,
                 ) {
