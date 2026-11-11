@@ -8,8 +8,11 @@ import com.example.roomie.data.RoomieState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class OnboardingViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
 
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.Eagerly, repo.state.value)
 

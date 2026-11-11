@@ -90,8 +90,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-class NotesViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class NotesViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.state.value)
     fun today(): LocalDate = repo.today()
     fun addNote(text: String, due: LocalDate?, pin: Boolean) = repo.addNote(text, due, pin)
@@ -105,7 +109,7 @@ fun NoteBoardScreen(
     startComposing: Boolean,
     onComposeHandled: () -> Unit,
     onOpenSettings: () -> Unit,
-    vm: NotesViewModel = viewModel(),
+    vm: NotesViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val me = state.session?.userId

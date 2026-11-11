@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
 import com.example.roomie.data.ChoreRules
 import com.example.roomie.data.FakeRoomieRepository
@@ -104,8 +103,12 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-class ChoresViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class ChoresViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.state.value)
     fun today(): LocalDate = repo.today()
     fun toggleDone(id: String) = repo.toggleChoreDone(id)
@@ -135,7 +138,7 @@ fun ChoresScreen(
     onOpenSettings: () -> Unit,
     onOpenChore: (String) -> Unit,
     onManageRotations: () -> Unit,
-    vm: ChoresViewModel = viewModel(),
+    vm: ChoresViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
@@ -498,7 +501,7 @@ private fun AddChoreSheet(
 
 /** "Chore details": who has it, when it's due, and Mark Complete. */
 @Composable
-fun ChoreDetailScreen(choreId: String, onBack: () -> Unit, onViewRotation: (String) -> Unit, vm: ChoresViewModel = viewModel()) {
+fun ChoreDetailScreen(choreId: String, onBack: () -> Unit, onViewRotation: (String) -> Unit, vm: ChoresViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val me = state.session?.userId
     val chore = ChoreRules.choreById(state, choreId)
@@ -562,7 +565,7 @@ fun ChoreDetailScreen(choreId: String, onBack: () -> Unit, onViewRotation: (Stri
 
 /** "Manage Rotations": every rotation in the house with who's next. */
 @Composable
-fun ManageRotationsScreen(onBack: () -> Unit, onOpenRotation: (String) -> Unit, vm: ChoresViewModel = viewModel()) {
+fun ManageRotationsScreen(onBack: () -> Unit, onOpenRotation: (String) -> Unit, vm: ChoresViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val today = vm.today()
 
@@ -603,7 +606,7 @@ fun ManageRotationsScreen(onBack: () -> Unit, onOpenRotation: (String) -> Unit, 
 
 /** "Edit rotation": change people and pace from a future week, with a preview of the next turns. */
 @Composable
-fun EditRotationScreen(rotationId: String, onBack: () -> Unit, vm: ChoresViewModel = viewModel()) {
+fun EditRotationScreen(rotationId: String, onBack: () -> Unit, vm: ChoresViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
     val rotation = state.rotations.firstOrNull { it.id == rotationId }
