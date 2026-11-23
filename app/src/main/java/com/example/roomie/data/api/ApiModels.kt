@@ -17,6 +17,10 @@ enum class ChoreFrequency { DAILY, EVERY_OTHER_DAY, WEEKLY, BIWEEKLY, MONTHLY }
 /** Computed by the server; not stored. */
 enum class TurnStatus { DONE, OVERDUE, DUE_TODAY, UPCOMING }
 
+enum class ShoppingCategory { GROCERIES, HOUSEHOLD, OTHER }
+
+enum class ShoppingStatus { NEEDED, BOUGHT }
+
 /** The public view of a person: members, rotation, assignee, claimedBy, … */
 data class UserDto(
     val id: Int,
@@ -110,3 +114,20 @@ data class TurnDto(
 )
 
 data class TurnChoreDto(val id: Int, val title: String, val frequency: ChoreFrequency)
+
+data class ShoppingItemDto(
+    val id: Int,
+    val name: String,
+    val category: ShoppingCategory,
+    val status: ShoppingStatus,
+    val priceCents: Int?,
+    val addedBy: UserDto,
+    /** "I'll get it". Cleared when bought. */
+    val claimedBy: UserDto?,
+    val boughtBy: UserDto?,
+    val boughtAt: Instant?,
+    /** Non-null means the item is on a bill and locked. */
+    val billId: Int?,
+    val createdAt: Instant,
+    val updatedAt: Instant,
+)

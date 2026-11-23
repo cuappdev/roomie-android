@@ -22,6 +22,7 @@ class RoomieApiTest {
     }
     private lateinit var choreApi: ChoreApiService
     private lateinit var houseApi: HouseApiService
+    private lateinit var shoppingApi: ShoppingApiService
 
     @Before
     fun setUp() {
@@ -29,6 +30,7 @@ class RoomieApiTest {
         val retrofit = roomieRetrofit(server.url("/").toString(), tokens, logBodies = false)
         choreApi = retrofit.create(ChoreApiService::class.java)
         houseApi = retrofit.create(HouseApiService::class.java)
+        shoppingApi = retrofit.create(ShoppingApiService::class.java)
     }
 
     @After
@@ -127,12 +129,36 @@ class RoomieApiTest {
     }
 
     @Test
+    fun parsesValidationErrors() = runBlocking {
+        server.enqueue(json(400, """
+            {"status":"fail","statusCode":400,"message":"Request validation failed",
+             "errorCode":"VALIDATION_ERROR","data":{"body.name":"Too small"}}
+        """))
+
+        val error = (apiCall { shoppingApi.addItem(1, AddShoppingItemBody("")) } as RoomieApiResponse.Error).error
+
+        assertEquals(ApiErrorCode.VALIDATION_ERROR, error.code)
+        assertEquals(400, error.statusCode)
+        assertEquals("Request validation failed", error.message)
+        assertEquals(mapOf("body.name" to "Too small"), error.fieldErrors)
+    }
+
+    @Test
     fun fallsBackToStatusWhenBodyIsNotJson() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(409).setBody("Conflict"))
 
         val error = (apiCall { houseApi.joinHouse(JoinHouseBody("LOFT-4827")) } as RoomieApiResponse.Error).error
 
         assertEquals(ApiErrorCode.CONFLICT, error.code)
+    }
+
+    @Test
+    fun leavesUnsetFieldsOutOfRequestBodies() = runBlocking {
+        server.enqueue(json(200, """{"item":null}"""))
+
+        apiCall { shoppingApi.updateItem(1, 2, UpdateShoppingItemBody(priceCents = 429)) }
+
+        assertEquals("""{"priceCents":429}""", server.takeRequest().body.readUtf8())
     }
 
     @Test
