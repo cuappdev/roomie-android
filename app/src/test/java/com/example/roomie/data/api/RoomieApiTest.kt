@@ -6,9 +6,12 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.Instant
+import java.time.LocalDate
 
 class RoomieApiTest {
 
@@ -17,18 +20,48 @@ class RoomieApiTest {
     private val tokens = TokenProvider { forceRefresh ->
         if (forceRefresh) "fresh-${++refreshes}" else "dev:mnh49"
     }
+    private lateinit var choreApi: ChoreApiService
     private lateinit var houseApi: HouseApiService
 
     @Before
     fun setUp() {
         server.start()
         val retrofit = roomieRetrofit(server.url("/").toString(), tokens, logBodies = false)
+        choreApi = retrofit.create(ChoreApiService::class.java)
         houseApi = retrofit.create(HouseApiService::class.java)
     }
 
     @After
     fun tearDown() {
         server.shutdown()
+    }
+
+    @Test
+    fun sendsTokenAndParsesDatesAndEnums() = runBlocking {
+        server.enqueue(json(200, """
+            {"assignments":[{"id":7,"chore":{"id":1,"title":"Trash","frequency":"EVERY_OTHER_DAY"},
+              "dueOn":"2026-10-28","status":"DUE_TODAY",
+              "assignee":{"id":3,"netid":"mnh49","name":"Mihili","avatarUrl":null,"presence":"AWAY"},
+              "completedAt":"2026-10-28T14:05:00.000Z","completedBy":null,"canSwap":false}]}
+        """))
+
+        val today = LocalDate.of(2026, 10, 28)
+        val turn = apiCall {
+            choreApi.getAssignments(1, today, today, assignee = "me", includeOverdue = true)
+        }.dataOrNull()!!.assignments.single()
+
+        val request = server.takeRequest()
+        assertEquals("Bearer dev:mnh49", request.getHeader("Authorization"))
+        assertEquals(
+            "/houses/1/chore-assignments?from=2026-10-28&to=2026-10-28&assignee=me&includeOverdue=true",
+            request.path,
+        )
+        assertEquals(today, turn.dueOn)
+        assertEquals(TurnStatus.DUE_TODAY, turn.status)
+        assertEquals(ChoreFrequency.EVERY_OTHER_DAY, turn.chore.frequency)
+        assertEquals(Instant.parse("2026-10-28T14:05:00Z"), turn.completedAt)
+        assertNull(turn.completedBy)
+        assertEquals(Presence.AWAY, turn.assignee.presence)
     }
 
     @Test

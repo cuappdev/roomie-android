@@ -12,6 +12,11 @@ enum class MemberRole { OWNER, MEMBER }
 /** The "I'm home / away" toggle. */
 enum class Presence { HOME, AWAY }
 
+enum class ChoreFrequency { DAILY, EVERY_OTHER_DAY, WEEKLY, BIWEEKLY, MONTHLY }
+
+/** Computed by the server; not stored. */
+enum class TurnStatus { DONE, OVERDUE, DUE_TODAY, UPCOMING }
+
 /** The public view of a person: members, rotation, assignee, claimedBy, … */
 data class UserDto(
     val id: Int,
@@ -74,3 +79,34 @@ data class InviteDto(
 )
 
 data class InviteHouseDto(val id: Int, val name: String, val members: List<UserDto>)
+
+data class ChoreDto(
+    val id: Int,
+    val title: String,
+    val frequency: ChoreFrequency,
+    /** The first turn's date. */
+    val startsOn: LocalDate,
+    val allowSwaps: Boolean,
+    /** Remind the day before at this hour (0–23). Saved, but reminders aren't sent yet. */
+    val reminderHour: Int?,
+    /** In turn order. */
+    val rotation: List<UserDto>,
+    /** The next 3 turns. */
+    val comingUp: List<TurnDto>,
+)
+
+/** One occurrence of a chore. Its ID is the `assignmentId` in URLs. */
+data class TurnDto(
+    val id: Int,
+    val chore: TurnChoreDto,
+    val dueOn: LocalDate,
+    val status: TurnStatus,
+    val assignee: UserDto,
+    val completedAt: Instant?,
+    /** Who actually did it. Can differ from [assignee]. */
+    val completedBy: UserDto?,
+    /** The chore allows swaps and the turn is upcoming and unfinished. */
+    val canSwap: Boolean,
+)
+
+data class TurnChoreDto(val id: Int, val title: String, val frequency: ChoreFrequency)
