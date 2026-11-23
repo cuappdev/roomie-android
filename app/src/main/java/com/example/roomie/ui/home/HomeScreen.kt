@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
 import com.example.roomie.data.ChoreRules
 import com.example.roomie.data.FakeRoomieRepository
@@ -78,8 +77,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.LocalTime
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-class HomeViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.state.value)
     fun today(): LocalDate = repo.today()
     fun togglePin(id: String) = repo.togglePin(id)
@@ -93,7 +96,7 @@ fun HomeScreen(
     onOpenBoard: () -> Unit,
     onOpenChores: () -> Unit,
     onOpenChore: (String) -> Unit,
-    vm: HomeViewModel = viewModel(),
+    vm: HomeViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
