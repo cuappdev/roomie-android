@@ -21,6 +21,9 @@ enum class ShoppingCategory { GROCERIES, HOUSEHOLD, OTHER }
 
 enum class ShoppingStatus { NEEDED, BOUGHT }
 
+/** Proposed; the Note Board isn't built on the backend yet. */
+enum class NoteColorDto { YELLOW, PINK, BLUE, GREEN, PURPLE }
+
 /** The public view of a person: members, rotation, assignee, claimedBy, … */
 data class UserDto(
     val id: Int,
@@ -129,5 +132,20 @@ data class ShoppingItemDto(
     /** Non-null means the item is on a bill and locked. */
     val billId: Int?,
     val createdAt: Instant,
+    val updatedAt: Instant,
+)
+
+data class NoteDto(
+    val id: Int,
+    /** 1 to 500 characters. */
+    val body: String,
+    val color: NoteColorDto,
+    /** Compare `author.id` with your own ID to show Edit and Delete. */
+    val author: UserDto,
+    val pinned: Boolean,
+    /** When the pin ends. Null on a pinned note means until someone unpins it. */
+    val pinnedUntil: Instant?,
+    val createdAt: Instant,
+    /** Later than [createdAt] means it was edited. */
     val updatedAt: Instant,
 )
