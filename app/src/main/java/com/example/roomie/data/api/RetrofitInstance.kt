@@ -30,6 +30,7 @@ class RetrofitInstance internal constructor(retrofit: Retrofit) {
     val houseApi: HouseApiService by lazy { retrofit.create(HouseApiService::class.java) }
     val choreApi: ChoreApiService by lazy { retrofit.create(ChoreApiService::class.java) }
     val shoppingApi: ShoppingApiService by lazy { retrofit.create(ShoppingApiService::class.java) }
+    val noteApi: NoteApiService by lazy { retrofit.create(NoteApiService::class.java) }
 }
 
 /** Builds the client. Separate from [RetrofitInstance] so tests can point it at a fake server. */
