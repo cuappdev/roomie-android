@@ -55,7 +55,6 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
 import com.example.roomie.data.Buddy
 import com.example.roomie.data.MemberStatus
@@ -80,6 +79,7 @@ import com.example.roomie.ui.theme.RoomieType
 import com.example.roomie.ui.theme.Surface
 import com.example.roomie.ui.theme.TabIcon
 import com.example.roomie.ui.theme.TextSecondary
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 // region Shared onboarding layout
 
@@ -147,7 +147,7 @@ private fun StepProgress(step: Int, modifier: Modifier = Modifier) {
 // region 1. Sign in
 
 @Composable
-fun SignInScreen(onSignedIn: (hasHouse: Boolean) -> Unit, vm: OnboardingViewModel = viewModel()) {
+fun SignInScreen(onSignedIn: (hasHouse: Boolean) -> Unit, vm: OnboardingViewModel = hiltViewModel()) {
     var netId by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
@@ -211,7 +211,7 @@ fun PickBuddyScreen(
     editing: Boolean,
     onNext: () -> Unit,
     onBack: (() -> Unit)?,
-    vm: OnboardingViewModel = viewModel(),
+    vm: OnboardingViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val session = state.session ?: return
@@ -300,7 +300,7 @@ fun SetupChoiceScreen(
     onStartHouse: () -> Unit,
     onJoined: () -> Unit,
     onBack: (() -> Unit)?,
-    vm: OnboardingViewModel = viewModel(),
+    vm: OnboardingViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val session = state.session ?: return
@@ -401,7 +401,7 @@ private fun ChoiceCard(
 // region 4. Add roommates
 
 @Composable
-fun AddRoommatesScreen(onNext: () -> Unit, onBack: () -> Unit, vm: OnboardingViewModel = viewModel()) {
+fun AddRoommatesScreen(onNext: () -> Unit, onBack: () -> Unit, vm: OnboardingViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
     val me = state.session?.userId
@@ -471,7 +471,7 @@ fun AddRoommatesScreen(onNext: () -> Unit, onBack: () -> Unit, vm: OnboardingVie
 // region 5. Set up your house
 
 @Composable
-fun SetUpHouseScreen(onEnter: () -> Unit, onBack: () -> Unit, vm: OnboardingViewModel = viewModel()) {
+fun SetUpHouseScreen(onEnter: () -> Unit, onBack: () -> Unit, vm: OnboardingViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
     val me = state.session?.userId

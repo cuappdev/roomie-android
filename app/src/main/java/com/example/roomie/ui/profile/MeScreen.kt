@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
 import com.example.roomie.data.FakeRoomieRepository
 import com.example.roomie.data.MemberStatus
@@ -66,8 +65,12 @@ import com.example.roomie.ui.theme.RoomieType
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-class MeViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class MeViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.state.value)
     fun renameHouse(name: String) = repo.renameHouse(name)
     fun signOut() = repo.signOut()
@@ -75,7 +78,7 @@ class MeViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository)
 }
 
 @Composable
-fun MeScreen(onChangePic: () -> Unit, onSignedOut: () -> Unit, onLeftHouse: () -> Unit, vm: MeViewModel = viewModel()) {
+fun MeScreen(onChangePic: () -> Unit, onSignedOut: () -> Unit, onLeftHouse: () -> Unit, vm: MeViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val session = state.session ?: return
     val house = state.house ?: return

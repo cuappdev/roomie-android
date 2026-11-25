@@ -61,7 +61,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.roomie.R
 import com.example.roomie.data.FakeRoomieRepository
 import com.example.roomie.data.RoomieState
@@ -100,8 +99,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import java.time.Duration
 import java.time.LocalDateTime
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-class ShoppingViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepository) : ViewModel() {
+@HiltViewModel
+class ShoppingViewModel @Inject constructor(private val repo: FakeRoomieRepository) : ViewModel() {
     val state: StateFlow<RoomieState> = repo.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), repo.state.value)
     fun now(): LocalDateTime = repo.now()
     fun add(name: String) = repo.addItem(name)
@@ -114,7 +117,7 @@ class ShoppingViewModel(private val repo: FakeRoomieRepository = FakeRoomieRepos
 }
 
 @Composable
-fun ShoppingScreen(onOpenSettings: () -> Unit, vm: ShoppingViewModel = viewModel()) {
+fun ShoppingScreen(onOpenSettings: () -> Unit, vm: ShoppingViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val house = state.house ?: return
     val me = state.session?.userId
