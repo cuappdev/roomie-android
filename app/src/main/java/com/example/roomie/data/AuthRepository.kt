@@ -10,6 +10,7 @@ import com.example.roomie.data.api.UpdateMeBody
 import com.example.roomie.data.api.apiCall
 import com.example.roomie.data.api.ResponseFlow
 import com.example.roomie.data.api.repositoryScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,13 +33,23 @@ class AuthRepository @Inject constructor(
         return login()
     }
 
-    /** Call right after sign-in, once the [com.example.roomie.data.api.TokenProvider] has a token. */
-    suspend fun login(): RoomieApiResponse<LoginResponse> = apiCall { retrofitInstance.userApi.login() }
-
-    /** Pipelines the response into [me]. */
-    fun fetchMe(refresh: Boolean = false) {
-        _me.fetch(refresh) { retrofitInstance.userApi.getMe() }
+    /**
+     * Call right after sign-in, once the [com.example.roomie.data.api.TokenProvider] has a token.
+     * Also fills [me], since login returns the same session as `GET /users/me`.
+     */
+    suspend fun login(): RoomieApiResponse<LoginResponse> {
+        val session = devTokenProvider.session
+        return apiCall { retrofitInstance.userApi.login() }.also { result ->
+            result.ifSuccess {
+                if (devTokenProvider.session == session) {
+                    _me.set(RoomieApiResponse.Success(MeResponse(it.user, it.house, it.pendingInvites)))
+                }
+            }
+        }
     }
+
+    /** Pipelines the response into [me]. Join the returned job to wait for it. */
+    fun fetchMe(refresh: Boolean = false): Job = _me.fetch(refresh) { retrofitInstance.userApi.getMe() }
 
     /** Updates [me] too, unless you signed in as someone else while the request was out. */
     suspend fun updateMe(

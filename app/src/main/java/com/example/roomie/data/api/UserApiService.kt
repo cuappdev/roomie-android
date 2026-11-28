@@ -30,7 +30,8 @@ interface UserApiService {
 data class LoginResponse(
     val isNewUser: Boolean,
     val user: SelfDto,
-    val house: HouseDto?,
+    /** Just the summary; fetch the full house with `GET /houses/{id}`. */
+    val house: HouseSummaryDto?,
     val pendingInvites: List<InviteDto>,
 )
 

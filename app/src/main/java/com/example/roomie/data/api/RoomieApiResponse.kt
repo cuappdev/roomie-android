@@ -163,6 +163,54 @@ internal class ResponseFlow<T>(private val scope: CoroutineScope) {
     }
 }
 
+/**
+ * Several [RoomieApiResponse]s of the same kind, one per key (e.g. one per week), with the same
+ * rules as [ResponseFlow] applied to each key: only a key's latest fetch publishes, [clear] drops
+ * everything and discards fetches in flight, and [updateAll] is serialized with every other write.
+ */
+internal class KeyedResponseFlow<K : Any, T>(private val scope: CoroutineScope) {
+    private val lock = Any()
+    private val flow = MutableStateFlow<Map<K, RoomieApiResponse<T>>>(emptyMap())
+    private val generations = HashMap<K, Long>()
+    private val inFlight = HashMap<K, Job>()
+    private var nextGeneration = 0L
+
+    val state: StateFlow<Map<K, RoomieApiResponse<T>>> = flow.asStateFlow()
+
+    val keys: Set<K> get() = flow.value.keys
+
+    /** Like [ResponseFlow.fetch], for [key] only. */
+    fun fetch(key: K, refresh: Boolean = false, call: suspend () -> T): Job = synchronized(lock) {
+        inFlight.remove(key)?.cancel()
+        val mine = ++nextGeneration
+        generations[key] = mine
+        if (!refresh || flow.value[key] == null) flow.value = flow.value + (key to RoomieApiResponse.Pending)
+        scope.launch {
+            val result = apiCall(call)
+            synchronized(lock) {
+                if (generations[key] != mine) return@synchronized
+                val keepShownData = refresh && result is RoomieApiResponse.Error &&
+                    flow.value[key] is RoomieApiResponse.Success
+                if (!keepShownData) flow.value = flow.value + (key to result)
+                inFlight.remove(key)
+            }
+        }.also { inFlight[key] = it }
+    }
+
+    /** Patches every key's value in place. Fetches in flight are left alone, as in [ResponseFlow.update]. */
+    fun updateAll(transform: (RoomieApiResponse<T>) -> RoomieApiResponse<T>) = synchronized(lock) {
+        flow.value = flow.value.mapValues { (_, value) -> transform(value) }
+    }
+
+    /** Drops every key. Fetches in flight are cancelled and can't bring their key back. */
+    fun clear() = synchronized(lock) {
+        inFlight.values.forEach { it.cancel() }
+        inFlight.clear()
+        generations.clear()
+        flow.value = emptyMap()
+    }
+}
+
 /** `{ status, statusCode, message, errorCode, data }`, the body of every error response. */
 private class ErrorBody(val message: String?, val errorCode: String?, val data: JsonElement?)
 

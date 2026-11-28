@@ -21,8 +21,10 @@ enum class ShoppingCategory { GROCERIES, HOUSEHOLD, OTHER }
 
 enum class ShoppingStatus { NEEDED, BOUGHT }
 
-/** Proposed; the Note Board isn't built on the backend yet. */
-enum class NoteColorDto { YELLOW, PINK, BLUE, GREEN, PURPLE }
+/** The six post-it colors, in the order the server hands them out. */
+enum class NoteColorDto { YELLOW, ORANGE, BLUE, GREEN, PINK, PURPLE }
+
+enum class LivingType { ON_CAMPUS, OFF_CAMPUS }
 
 /** The public view of a person: members, rotation, assignee, claimedBy, … */
 data class UserDto(
@@ -61,12 +63,18 @@ data class MemberDto(
 data class HouseDto(
     val id: Int,
     val name: String,
+    /** Hex, e.g. `#8B5A34`. */
+    val color: String?,
+    val livingType: LivingType?,
+    val address: String?,
     /** e.g. `LOFT-4827`. Not case-sensitive. */
     val inviteCode: String,
     val unit: String?,
     val leaseEndsOn: LocalDate?,
     /** IANA name. Decides what "today" means for chores. */
     val timezone: String,
+    /** e.g. `CHORES`, `SHOPPING`. Kept as strings so a new feature doesn't break parsing. */
+    val features: List<String>?,
     val members: List<MemberDto>,
     val pendingInvites: List<PendingInviteDto>,
 )
@@ -75,7 +83,7 @@ data class HouseDto(
 data class PendingInviteDto(val id: Int, val netid: String, val createdAt: Instant)
 
 /** The short house in `GET /users/me`. [role] is yours. */
-data class HouseSummaryDto(val id: Int, val name: String, val role: MemberRole)
+data class HouseSummaryDto(val id: Int, val name: String, val color: String?, val role: MemberRole)
 
 /** An invite you received. Has enough for the "Join this house?" prompt. */
 data class InviteDto(
@@ -85,7 +93,7 @@ data class InviteDto(
     val invitedBy: UserDto,
 )
 
-data class InviteHouseDto(val id: Int, val name: String, val members: List<UserDto>)
+data class InviteHouseDto(val id: Int, val name: String, val color: String?, val members: List<UserDto>)
 
 data class ChoreDto(
     val id: Int,
@@ -139,13 +147,16 @@ data class NoteDto(
     val id: Int,
     /** 1 to 500 characters. */
     val body: String,
+    /** The server picks one when the app leaves it out. */
     val color: NoteColorDto,
-    /** Compare `author.id` with your own ID to show Edit and Delete. */
-    val author: UserDto,
+    /** Feeds "Coming up" on Home. Can't be in the past. */
+    val dueOn: LocalDate?,
+    /** Pinned notes stay on the board until someone unpins them. */
     val pinned: Boolean,
-    /** When the pin ends. Null on a pinned note means until someone unpins it. */
-    val pinnedUntil: Instant?,
+    val pinnedAt: Instant?,
     val createdAt: Instant,
     /** Later than [createdAt] means it was edited. */
     val updatedAt: Instant,
+    /** Compare `author.id` with your own ID to show Edit. */
+    val author: UserDto,
 )

@@ -61,6 +61,9 @@ class HouseRepository @Inject constructor(private val retrofitInstance: Retrofit
     suspend fun removeMember(houseId: Int, userId: Int): RoomieApiResponse<Unit> =
         apiCall { api.removeMember(houseId, userId) }.also { it.ifSuccess { fetchHouse(houseId, refresh = true) } }
 
+    /** Forgets the house, e.g. on sign-out. */
+    fun clear() = _house.set(RoomieApiResponse.Pending)
+
     private suspend fun updatingHouse(call: suspend () -> HouseDto): RoomieApiResponse<HouseDto> =
         apiCall(call).also { result -> result.ifSuccess { _house.set(RoomieApiResponse.Success(it)) } }
 }

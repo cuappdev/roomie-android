@@ -2,6 +2,7 @@ package com.example.roomie.data
 
 import com.example.roomie.data.api.ChoreDto
 import com.example.roomie.data.api.ChoreStatsResponse
+import com.example.roomie.data.api.KeyedResponseFlow
 import com.example.roomie.data.api.CreateChoreBody
 import com.example.roomie.data.api.RetrofitInstance
 import com.example.roomie.data.api.RoomieApiResponse
@@ -39,6 +40,14 @@ class ChoreRepository @Inject constructor(private val retrofitInstance: Retrofit
     /** Everyone's turns over the range last passed to [fetchTurns], plus overdue ones. */
     val turns: StateFlow<RoomieApiResponse<List<TurnDto>>> = _turns.state
 
+    private val _weeks = KeyedResponseFlow<LocalDate, List<TurnDto>>(scope)
+
+    /**
+     * Everyone's turns for each week passed to [fetchWeek] (keyed by its Monday), plus turns left
+     * unfinished in the 30 days before it. Weeks stay cached so switching back is instant.
+     */
+    val weeks: StateFlow<Map<LocalDate, RoomieApiResponse<List<TurnDto>>>> = _weeks.state
+
     private val _stats = ResponseFlow<ChoreStatsResponse>(scope)
 
     /** How many turns each member finished in the month last passed to [fetchStats]. */
@@ -66,6 +75,28 @@ class ChoreRepository @Inject constructor(private val retrofitInstance: Retrofit
         _turns.fetch(refresh) {
             api.getAssignments(houseId, from, to, includeOverdue = true).assignments
         }
+    }
+
+    /** Pipelines Monday [weekStart] to Sunday into [weeks]. */
+    fun fetchWeek(houseId: Int, weekStart: LocalDate, refresh: Boolean = false) {
+        _weeks.fetch(weekStart, refresh) {
+            api.getAssignments(houseId, weekStart, weekStart.plusDays(6), includeOverdue = true).assignments
+        }
+    }
+
+    /** Refetches every week in [weeks], e.g. after a rotation change reschedules turns. */
+    fun refreshWeeks(houseId: Int) {
+        _weeks.keys.forEach { fetchWeek(houseId, it, refresh = true) }
+    }
+
+    /** Forgets everything, e.g. on sign-out or after leaving the house. */
+    fun clear() {
+        _chores.set(RoomieApiResponse.Pending)
+        _myTurnsToday.set(RoomieApiResponse.Pending)
+        _turns.set(RoomieApiResponse.Pending)
+        _stats.set(RoomieApiResponse.Pending)
+        _weeks.clear()
+        myTurnsQuery = null
     }
 
     /** Pipelines the response into [stats]. Leave [month] null for this month. */
@@ -105,9 +136,14 @@ class ChoreRepository @Inject constructor(private val retrofitInstance: Retrofit
             }
         }
 
-    /** A chore change can rewrite its upcoming turns, so refetch the chores. Turn lists refresh on their next fetch. */
+    /** A chore change can rewrite its upcoming turns, so refetch the chores and the cached weeks. */
     private suspend fun <T> changingChores(houseId: Int, call: suspend () -> T): RoomieApiResponse<T> =
-        apiCall(call).also { it.ifSuccess { fetchChores(houseId, refresh = true) } }
+        apiCall(call).also {
+            it.ifSuccess {
+                fetchChores(houseId, refresh = true)
+                refreshWeeks(houseId)
+            }
+        }
 
     /** Patches the cached lists, then refetches [myTurnsToday] if it's for the same house. */
     private fun changedTurns(houseId: Int, changed: List<TurnDto>) {
@@ -125,6 +161,7 @@ class ChoreRepository @Inject constructor(private val retrofitInstance: Retrofit
     private fun replaceTurns(changed: List<TurnDto>) {
         val byId = changed.associateBy { it.id }
         _turns.update { response -> response.map { turns -> turns.map { byId[it.id] ?: it } } }
+        _weeks.updateAll { response -> response.map { turns -> turns.map { byId[it.id] ?: it } } }
         val day = myTurnsQuery?.second
         _myTurnsToday.update { response ->
             response.map { turns ->
