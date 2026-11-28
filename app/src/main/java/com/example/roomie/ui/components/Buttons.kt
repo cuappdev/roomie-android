@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
@@ -31,11 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomie.R
 import com.example.roomie.ui.theme.Border
+import com.example.roomie.ui.theme.BrandBrown
 import com.example.roomie.ui.theme.ButtonBorder
 import com.example.roomie.ui.theme.ButtonGradientEnd
 import com.example.roomie.ui.theme.ButtonGradientMid
 import com.example.roomie.ui.theme.ButtonGradientStart
-import com.example.roomie.ui.theme.BrandBrown
 import com.example.roomie.ui.theme.Danger
 import com.example.roomie.ui.theme.GlassButtonBorder
 import com.example.roomie.ui.theme.RoomieType
@@ -103,8 +104,11 @@ fun SecondaryButton(
             .fillMaxWidth()
             .height(height)
             .then(
-                if (glass) Modifier.glassSurface(shape, borderWidth = 1.dp, borderColor = GlassButtonBorder)
-                else Modifier.clip(shape).background(Surface).border(BorderStroke(1.dp, Border), shape),
+                if (glass) {
+                    Modifier.glassSurface(shape, borderWidth = 1.dp, borderColor = GlassButtonBorder)
+                } else {
+                    Modifier.clip(shape).background(Surface).border(BorderStroke(1.dp, Border), shape)
+                },
             )
             .clickable(role = Role.Button, onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -166,7 +170,7 @@ fun TextAction(
 fun InlineAddButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String = "Add",
+    text: String = stringResource(R.string.add),
     height: Dp = 46.dp,
     corner: Dp = 8.dp,
     enabled: Boolean = true,

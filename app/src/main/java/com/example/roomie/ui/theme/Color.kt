@@ -42,13 +42,16 @@ val ButtonGradientStart = Color(0xFF8A6846)
 val ButtonGradientMid = Color(0xFF8A633C)
 val ButtonGradientEnd = Color(0xFF7D4914)
 val ButtonBorder = Color(0x808A6846)
+
 // Glass card fill as rendered in Figma over the cream background.
 val GlassStart = Color(0xFFF3E9DA)
 val GlassEnd = Color(0xFFEEE3D3)
 val GlassBorder = Color(0xD9FFFFFF)
 val GlassButtonBorder = Color(0x59B5926F)
+
 // rgba(87,64,43,…) drop shadows in the refresh.
 val ShadowWarm = Color(0xFF57402B)
+
 // Home & profile refresh, sampled as rendered in Figma over cream / white.
 val GlassLight = Color(0xFFFCF3E5)
 val GlassOnWhite = Color(0xFFF2EDE7)
