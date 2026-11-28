@@ -1,12 +1,23 @@
 package com.example.roomie.ui
 
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,7 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.roomie.data.FakeRoomieRepository
+import com.example.roomie.data.Session
 import com.example.roomie.ui.chores.ChoreDetailScreen
 import com.example.roomie.ui.chores.ChoresScreen
 import com.example.roomie.ui.chores.EditRotationScreen
@@ -31,6 +42,7 @@ import com.example.roomie.ui.onboarding.SignInScreen
 import com.example.roomie.ui.profile.MeScreen
 import com.example.roomie.ui.shopping.ShoppingScreen
 import com.example.roomie.ui.theme.Background
+import kotlinx.coroutines.delay
 
 private object Routes {
     const val SIGN_IN = "signin"
@@ -66,11 +78,41 @@ private val TAB_ROUTES = mapOf(
     Routes.ME to RoomieTab.Profile,
 )
 
+/** How often open screens pick up roommates' changes. The backend has no push updates yet. */
+private const val REFRESH_EVERY_MS = 30_000L
+
 @Composable
-fun RoomieApp() {
+fun RoomieApp(vm: AppViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        vm.messages.collect { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+    }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        var resumedBefore = false
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            // Coming back to the app reloads right away; the first launch is already loading.
+            if (resumedBefore) vm.refresh()
+            resumedBefore = true
+            while (true) {
+                delay(REFRESH_EVERY_MS)
+                vm.refresh()
+            }
+        }
+    }
+    val restoring by vm.restoring.collectAsStateWithLifecycle()
+    if (restoring) {
+        // Checking a saved sign-in. Usually a split second, so a plain background beats a spinner.
+        Box(Modifier.fillMaxSize().background(Background))
+        return
+    }
+    RoomieNavigation(vm.session)
+}
+
+@Composable
+private fun RoomieNavigation(session: Session?) {
     val nav = rememberNavController()
     val start = remember {
-        val session = FakeRoomieRepository.state.value.session
         when {
             session == null -> Routes.SIGN_IN
             !session.hasHouse -> Routes.SETUP
@@ -95,7 +137,9 @@ fun RoomieApp() {
                 })
             }
             composable(Routes.BUDDY) {
-                PickBuddyScreen(editing = false, onNext = { nav.navigate(Routes.SETUP) }, onBack = { nav.popBackStack() })
+                PickBuddyScreen(editing = false, onNext = {
+                    nav.navigate(Routes.SETUP)
+                }, onBack = { nav.popBackStack() })
             }
             composable(Routes.EDIT_BUDDY) {
                 PickBuddyScreen(editing = true, onNext = { nav.popBackStack() }, onBack = { nav.popBackStack() })
@@ -129,19 +173,31 @@ fun RoomieApp() {
                 )
             }
             composable(Routes.CHORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) {
+                // ChoreDetailViewModel reads the "id" argument.
                 ChoreDetailScreen(
-                    choreId = it.arguments?.getString("id").orEmpty(),
                     onBack = { nav.popBackStack() },
                     onViewRotation = { id -> nav.navigate(Routes.rotation(id)) },
                 )
             }
             composable(Routes.ROTATIONS) {
-                ManageRotationsScreen(onBack = { nav.popBackStack() }, onOpenRotation = { id -> nav.navigate(Routes.rotation(id)) })
+                ManageRotationsScreen(onBack = {
+                    nav.popBackStack()
+                }, onOpenRotation = { id -> nav.navigate(Routes.rotation(id)) })
             }
             composable(Routes.ROTATION, arguments = listOf(navArgument("id") { type = NavType.StringType })) {
-                EditRotationScreen(rotationId = it.arguments?.getString("id").orEmpty(), onBack = { nav.popBackStack() })
+                // EditRotationViewModel reads the "id" argument.
+                EditRotationScreen(onBack = { nav.popBackStack() })
             }
-            composable(Routes.NOTES, arguments = listOf(navArgument("compose") { type = NavType.BoolType; defaultValue = false })) {
+            composable(
+                Routes.NOTES,
+                arguments = listOf(
+                    navArgument("compose") {
+                        type = NavType.BoolType
+                        defaultValue =
+                            false
+                    },
+                ),
+            ) {
                 // The handled flag lives in savedStateHandle so it survives the tab being saved and
                 // restored; otherwise coming back to Notes would reopen the composer.
                 NoteBoardScreen(

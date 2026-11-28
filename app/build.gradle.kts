@@ -27,6 +27,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // roomie.fakeData=true in local.properties runs the app on in-memory demo data instead of the backend.
+        val fakeData = localProperties.getProperty("roomie.fakeData")?.toBoolean() ?: false
+        buildConfigField("boolean", "USE_FAKE_DATA", fakeData.toString())
     }
 
     buildTypes {

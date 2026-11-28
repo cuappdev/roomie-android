@@ -4,9 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -26,35 +28,38 @@ import java.util.UUID
  * treated as a new account and goes through onboarding; invite code `LOFT-4827` joins the demo
  * house.
  */
-object FakeRoomieRepository {
-
-    sealed interface SignInResult {
-        data object Invalid : SignInResult
-        data class Success(val hasHouse: Boolean) : SignInResult
-    }
+object FakeRoomieRepository : RoomieRepository {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val _state = MutableStateFlow(RoomieState())
-    val state: StateFlow<RoomieState> = _state.asStateFlow()
+    override val state: StateFlow<RoomieState> = _state.asStateFlow()
 
-    fun today(): LocalDate = LocalDate.now()
-    fun now(): LocalDateTime = LocalDateTime.now()
+    /** Nothing here can fail in a way the user needs to hear about. */
+    override val messages: Flow<String> = emptyFlow()
+
+    override fun today(): LocalDate = LocalDate.now()
+    override fun now(): LocalDateTime = LocalDateTime.now()
 
     val userId: String? get() = _state.value.session?.userId
+
+    /** The demo house as its owner sees it, for Compose previews. Doesn't touch [state]. */
+    fun demoState(): RoomieState = seedDemoHouse(DEMO_OWNER_NET_ID)
 
     // region Session and onboarding
 
     fun normalizeNetId(input: String): String =
         input.trim().lowercase().removeSuffix("@cornell.edu")
 
-    fun isValidNetId(netId: String): Boolean = NET_ID.matches(normalizeNetId(netId))
+    override fun isValidNetId(netId: String): Boolean = NET_ID.matches(normalizeNetId(netId))
 
-    fun signIn(netIdInput: String, password: String): SignInResult {
+    override suspend fun signIn(netIdInput: String, password: String): RoomieRepository.SignInResult {
         val netId = normalizeNetId(netIdInput)
-        if (!NET_ID.matches(netId) || password.isBlank()) return SignInResult.Invalid
+        if (!NET_ID.matches(netId) || password.isBlank()) {
+            return RoomieRepository.SignInResult.Invalid("That NetID and password didn't work.")
+        }
         if (netId == DEMO_OWNER_NET_ID) {
             _state.value = seedDemoHouse(currentUserNetId = netId)
-            return SignInResult.Success(hasHouse = true)
+            return RoomieRepository.SignInResult.Success(hasHouse = true)
         }
         val known = DIRECTORY[netId]
         _state.value = RoomieState(
@@ -67,14 +72,14 @@ object FakeRoomieRepository {
                 hasHouse = false,
             )
         )
-        return SignInResult.Success(hasHouse = false)
+        return RoomieRepository.SignInResult.Success(hasHouse = false)
     }
 
-    fun signOut() {
+    override fun signOut() {
         _state.value = RoomieState()
     }
 
-    fun setBuddy(buddy: Buddy) = _state.update { s ->
+    override fun setBuddy(buddy: Buddy) = _state.update { s ->
         val session = s.session ?: return@update s
         s.copy(
             session = session.copy(buddy = buddy),
@@ -85,7 +90,7 @@ object FakeRoomieRepository {
     }
 
     /** Starts a draft house owned by the current user; it's named on the last onboarding step. */
-    fun startHouse() = _state.update { s ->
+    override fun startHouse() = _state.update { s ->
         val session = s.session ?: return@update s
         if (s.house != null && s.house.members.firstOrNull()?.id == session.userId) return@update s
         s.copy(
@@ -102,20 +107,20 @@ object FakeRoomieRepository {
 
     fun isValidInviteCode(code: String): Boolean = code.trim().uppercase() == DEMO_INVITE_CODE
 
-    fun joinHouse(code: String): Boolean {
-        if (!isValidInviteCode(code)) return false
-        val session = _state.value.session ?: return false
+    override suspend fun joinHouse(code: String): String? {
+        if (!isValidInviteCode(code)) return "We couldn't find a house with that code."
+        val session = _state.value.session ?: return "Sign in first."
         val demo = seedDemoHouse(currentUserNetId = DEMO_OWNER_NET_ID)
         val me = session.toRoommate(MemberStatus.Joined)
         _state.value = demo.copy(
             session = session.copy(hasHouse = true),
             house = demo.house!!.copy(members = demo.house.members + me),
         )
-        return true
+        return null
     }
 
     /** Returns an error message, or null when the invite was sent. */
-    fun inviteRoommate(netIdInput: String): String? {
+    override suspend fun inviteRoommate(netIdInput: String): String? {
         val netId = normalizeNetId(netIdInput)
         if (!NET_ID.matches(netId)) return "Enter a Cornell NetID, like ab123."
         val house = _state.value.house ?: return "Start a house first."
@@ -141,19 +146,21 @@ object FakeRoomieRepository {
         return null
     }
 
-    fun removeRoommate(id: String) = _state.update { s ->
+    override fun removeRoommate(id: String) = _state.update { s ->
         s.copy(house = s.house?.copy(members = s.house.members.filterNot { it.id == id }))
     }
 
-    fun renameHouse(name: String) = _state.update { s ->
+    override fun renameHouse(name: String) = _state.update { s ->
         s.copy(house = s.house?.copy(name = name.trim(), inviteCode = inviteCodeFor(name, s.house.inviteCode)))
     }
 
-    fun finishOnboarding() = _state.update { s ->
-        s.copy(session = s.session?.copy(hasHouse = s.house != null))
+    override suspend fun finishOnboarding(name: String): String? {
+        renameHouse(name)
+        _state.update { s -> s.copy(session = s.session?.copy(hasHouse = s.house != null)) }
+        return null
     }
 
-    fun leaveHouse() = _state.update { s ->
+    override fun leaveHouse() = _state.update { s ->
         s.copy(session = s.session?.copy(hasHouse = false), house = null, notes = emptyList(), chores = emptyList(), shopping = emptyList())
     }
 
@@ -165,7 +172,7 @@ object FakeRoomieRepository {
 
     // region Notes
 
-    fun addNote(text: String, dueDate: LocalDate?, pin: Boolean) {
+    override fun addNote(text: String, dueDate: LocalDate?, pin: Boolean) {
         val me = userId ?: return
         val trimmed = text.trim().take(NoteRules.MAX_LENGTH)
         if (trimmed.isEmpty()) return
@@ -185,16 +192,16 @@ object FakeRoomieRepository {
         _state.update { it.copy(notes = it.notes + note) }
     }
 
-    fun updateNote(id: String, text: String, dueDate: LocalDate?) {
+    override fun updateNote(id: String, text: String, dueDate: LocalDate?) {
         if (text.isBlank()) return
         _state.update { s ->
             s.copy(notes = s.notes.map { if (it.id == id) it.copy(text = text.trim().take(NoteRules.MAX_LENGTH), dueDate = dueDate) else it })
         }
     }
 
-    fun deleteNote(id: String) = _state.update { s -> s.copy(notes = s.notes.filterNot { it.id == id }) }
+    override fun deleteNote(id: String) = _state.update { s -> s.copy(notes = s.notes.filterNot { it.id == id }) }
 
-    fun togglePin(id: String) = _state.update { s ->
+    override fun togglePin(id: String) = _state.update { s ->
         val today = today()
         val pins = NoteRules.pinsInUse(s.notes, today)
         s.copy(notes = s.notes.map { n ->
@@ -211,13 +218,13 @@ object FakeRoomieRepository {
 
     // region Chores
 
-    fun addChore(title: String, assigneeIds: List<String>, dueDate: LocalDate) {
+    override fun addChore(title: String, assigneeIds: List<String>, dueDate: LocalDate) {
         if (title.isBlank() || assigneeIds.isEmpty()) return
         val chore = Chore(UUID.randomUUID().toString(), title.trim(), assigneeIds, dueDate)
         _state.update { it.copy(chores = it.chores + chore) }
     }
 
-    fun addRotation(title: String, dueDay: DayOfWeek, memberIds: List<String>, peoplePerWeek: Int, startWeek: LocalDate) {
+    override fun addRotation(title: String, dueDay: DayOfWeek, memberIds: List<String>, peoplePerWeek: Int, startWeek: LocalDate) {
         if (title.isBlank() || memberIds.isEmpty()) return
         val rotation = Rotation(
             UUID.randomUUID().toString().replace("-", ""),
@@ -229,7 +236,7 @@ object FakeRoomieRepository {
     }
 
     /** Works for one-off chores and rotation weeks alike. */
-    fun toggleChoreDone(id: String) = _state.update { s ->
+    override fun toggleChoreDone(id: String) = _state.update { s ->
         val today = today()
         if (s.chores.any { it.id == id }) {
             s.copy(chores = s.chores.map { if (it.id == id) it.copy(completedOn = if (it.done) null else today) else it })
@@ -239,10 +246,10 @@ object FakeRoomieRepository {
         }
     }
 
-    fun deleteChore(id: String) = _state.update { s -> s.copy(chores = s.chores.filterNot { it.id == id }) }
+    override fun deleteChore(id: String) = _state.update { s -> s.copy(chores = s.chores.filterNot { it.id == id }) }
 
     /** Changes take effect from [fromWeek]; earlier weeks keep their assignees. */
-    fun updateRotation(id: String, memberIds: List<String>, peoplePerWeek: Int, fromWeek: LocalDate) {
+    override fun updateRotation(id: String, memberIds: List<String>, peoplePerWeek: Int, fromWeek: LocalDate) {
         if (memberIds.isEmpty()) return
         _state.update { s ->
             s.copy(rotations = s.rotations.map {
@@ -251,7 +258,7 @@ object FakeRoomieRepository {
         }
     }
 
-    fun deleteRotation(id: String) = _state.update { s ->
+    override fun deleteRotation(id: String) = _state.update { s ->
         s.copy(
             rotations = s.rotations.filterNot { it.id == id },
             rotationCompletions = s.rotationCompletions.filterKeys { !it.startsWith("rot_${id}_") },
@@ -262,32 +269,32 @@ object FakeRoomieRepository {
 
     // region Shopping
 
-    fun addItem(name: String) {
+    override fun addItem(name: String) {
         val me = userId ?: return
         if (name.isBlank()) return
         val item = ShoppingItem(UUID.randomUUID().toString(), name.trim(), addedById = me, addedAt = now())
         _state.update { it.copy(shopping = it.shopping + item) }
     }
 
-    fun incrementQuantity(id: String) = updateItem(id) { it.copy(quantity = it.quantity + 1) }
+    override fun incrementQuantity(id: String) = updateItem(id) { it.copy(quantity = it.quantity + 1) }
 
-    fun markBought(id: String) {
+    override fun markBought(id: String) {
         val me = userId ?: return
         updateItem(id) { it.copy(boughtAt = now(), boughtById = me, couldntFindById = null) }
     }
 
-    fun undoBought(id: String) = updateItem(id) { it.copy(boughtAt = null, boughtById = null) }
+    override fun undoBought(id: String) = updateItem(id) { it.copy(boughtAt = null, boughtById = null) }
 
-    fun toggleCouldntFind(id: String) {
+    override fun toggleCouldntFind(id: String) {
         val me = userId ?: return
         updateItem(id) { it.copy(couldntFindById = if (it.couldntFindById == null) me else null) }
     }
 
-    fun saveItem(id: String, name: String, quantity: Int, note: String) = updateItem(id) {
+    override fun saveItem(id: String, name: String, quantity: Int, note: String) = updateItem(id) {
         it.copy(name = name.trim().ifEmpty { it.name }, quantity = quantity.coerceAtLeast(1), note = note.trim())
     }
 
-    fun deleteItem(id: String) = _state.update { s -> s.copy(shopping = s.shopping.filterNot { it.id == id }) }
+    override fun deleteItem(id: String) = _state.update { s -> s.copy(shopping = s.shopping.filterNot { it.id == id }) }
 
     private fun updateItem(id: String, transform: (ShoppingItem) -> ShoppingItem) = _state.update { s ->
         s.copy(shopping = s.shopping.map { if (it.id == id) transform(it) else it })
