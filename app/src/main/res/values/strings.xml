@@ -1,3 +1,359 @@
 <resources>
     <string name="app_name">Roomie</string>
+
+    <!-- Common -->
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="choose">Choose</string>
+    <string name="choose_a_week">Choose a week</string>
+    <string name="you">you</string>
+    <string name="nobody">nobody</string>
+    <string name="unassigned">Unassigned</string>
+    <!-- Joins names: "Mina, Leah and Stef". %1$s is the comma-separated list, %2$s the last name. -->
+    <string name="names_and">%1$s and %2$s</string>
+    <string name="names_separator">", "</string>
+
+    <!-- Chores -->
+    <string name="chores_title">Chores</string>
+    <string name="chores_this_week">This Week</string>
+    <string name="chores_manage_rotations">Manage Rotations</string>
+    <string name="chores_mine">My Chores</string>
+    <string name="chores_all">All Chores</string>
+    <string name="chores_none_mine">No chores assigned to you this week.</string>
+    <string name="chores_none">No chores this week.</string>
+    <string name="chores_add">Add Chore</string>
+    <string name="chores_back_to_chores">Back to chores</string>
+
+    <!-- Chores: week picker -->
+    <string name="chores_week_previous">Previous</string>
+    <string name="chores_week_next">Next week</string>
+    <string name="cd_chores_show_week">Show one week</string>
+    <string name="cd_chores_show_month">Show the month</string>
+
+    <!-- Chores: card -->
+    <string name="chore_due_today">Due Today</string>
+    <!-- %s is a short date, like "Nov 19". -->
+    <string name="chore_due_short">Due %s</string>
+    <string name="chore_overdue_short">Overdue · %s</string>
+    <string name="chore_completed_short">Completed · %s</string>
+    <string name="chore_weekly_rotation">Weekly rotation</string>
+    <!-- %s is the chore's title. -->
+    <string name="cd_chore_open">Open %s</string>
+    <string name="cd_chore_done">%s done</string>
+
+    <!-- Chores: add chore sheet -->
+    <string name="add_chore_details">Chore Details</string>
+    <string name="add_chore_name">Chore Name</string>
+    <string name="add_chore_name_placeholder">e.g. Take out recycling</string>
+    <string name="cd_add_chore_name">Chore name</string>
+    <string name="add_chore_due_date">Due Date</string>
+    <string name="add_chore_pick_date">Pick a date</string>
+    <string name="cd_add_chore_pick_due_date">Pick a due date</string>
+    <string name="add_chore_assignment">Assignment</string>
+    <string name="add_chore_assign_once">Assign Once</string>
+    <string name="add_chore_rotate_weekly">Rotate Weekly</string>
+    <string name="add_chore_rotate_hint">Automatically rotate the assignment each week.</string>
+    <string name="add_chore_once_hint">Choose who does this chore this time.</string>
+    <string name="add_chore_people_assigned">People Assigned</string>
+    <string name="cd_add_chore_people_assigned">Choose who does this chore</string>
+    <string name="add_chore_create">Create Chore</string>
+
+    <!-- Chores: rotations -->
+    <string name="rotation_people_per_week">People per Week</string>
+    <string name="cd_rotation_people_per_week">People per week</string>
+    <string name="rotation_people_to_rotate">People to Rotate</string>
+    <string name="cd_rotation_people_to_rotate">Choose who\'s in the rotation</string>
+    <string name="rotation_starting_week">Starting Week</string>
+    <string name="cd_rotation_starting_week">Starting week</string>
+    <string name="rotation_preview">Rotation Preview</string>
+    <string name="rotation_preview_week_of">Week of</string>
+    <string name="rotation_preview_assigned_to">Assigned to</string>
+    <plurals name="rotation_people_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d people</item>
+    </plurals>
+
+    <!-- Chores: chore details -->
+    <!-- %s is who has the chore, like "you and Mina". -->
+    <string name="chore_detail_assigned_to">Assigned to %s</string>
+    <!-- %s is a long date, like "Thursday, November 19". -->
+    <string name="chore_detail_completed">Completed %s</string>
+    <string name="chore_detail_due">Due %s</string>
+    <string name="chore_detail_weekly_rotation">↻ Weekly rotation</string>
+    <string name="chore_detail_stays_with">This week’s assignment stays with %s until completed.</string>
+    <string name="chore_detail_mark_complete">Mark Complete</string>
+    <string name="chore_detail_mark_not_done">Mark Not Done</string>
+    <string name="chore_detail_view_rotation">View Rotation</string>
+    <string name="chore_detail_delete">Delete Chore</string>
+
+    <!-- Chores: manage rotations -->
+    <string name="manage_rotations_subtitle">Automatic weekly assignments</string>
+    <string name="manage_rotations_empty">No rotations yet. Pick Rotate Weekly when you add a chore.</string>
+    <!-- "Mina, Leah · 1 person per week". %1$s is the names, %2$s the people count ("1 person"). -->
+    <string name="manage_rotations_members">%1$s · %2$s per week</string>
+    <!-- "Next: Leah · Nov 26". -->
+    <string name="manage_rotations_next">Next: %1$s · %2$s</string>
+    <string name="manage_rotations_view_edit">View &amp; Edit Rotation</string>
+
+    <!-- Chores: edit rotation -->
+    <!-- %s is a weekday, like "Thursday". -->
+    <string name="edit_rotation_subtitle">Weekly rotation · due %s</string>
+    <string name="edit_rotation_people_schedule">People &amp; Schedule</string>
+    <string name="edit_rotation_save">Save Changes</string>
+    <string name="edit_rotation_applies_future">Applies to future weeks only.</string>
+    <string name="edit_rotation_applies_next_turn">Applies from the next turn. Finished turns don\'t change.</string>
+    <string name="edit_rotation_delete">Delete Rotation</string>
+
+    <!-- Shared -->
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="next">Next</string>
+    <string name="settings">Settings</string>
+    <string name="someone">Someone</string>
+    <!-- "Leah (you)" in roommate lists. -->
+    <string name="roommate_is_you">%s (you)</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_chores">Chores</string>
+    <string name="tab_notes">Note board</string>
+    <string name="tab_shopping">Shopping list</string>
+    <string name="tab_profile">Your space</string>
+    <string name="status_owner">Owner</string>
+    <string name="status_joined">Joined</string>
+    <string name="status_pending">Pending</string>
+    <string name="status_invite_sent">Invite sent</string>
+    <string name="buddy_mug">Mug</string>
+    <string name="buddy_sock">Sock</string>
+    <string name="buddy_plant">Plant</string>
+    <string name="buddy_toaster">Toaster</string>
+    <string name="buddy_teapot">Teapot</string>
+    <string name="cd_your_buddy">Your buddy: %s</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <!-- "Week of Nov 16, 2026". -->
+    <string name="week_of">Week of %s</string>
+    <string name="ago_just_now">just now</string>
+    <string name="ago_today">today</string>
+    <string name="ago_yesterday">yesterday</string>
+    <string name="ago_last_month">last month</string>
+    <plurals name="ago_minutes">
+        <item quantity="one">%d min ago</item>
+        <item quantity="other">%d min ago</item>
+    </plurals>
+    <plurals name="ago_days">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <plurals name="ago_months">
+        <item quantity="one">%d month ago</item>
+        <item quantity="other">%d months ago</item>
+    </plurals>
+
+    <!-- Invite code -->
+    <string name="invite_code">Invite Code</string>
+    <string name="invite_copy">Copy</string>
+    <string name="cd_invite_copy">Copy invite code</string>
+    <string name="invite_copied">Invite code copied</string>
+    <string name="invite_clip_label">Roomie invite code</string>
+    <string name="invite_share">Share Invite Link</string>
+    <string name="invite_share_chooser">Share invite link</string>
+    <string name="invite_share_our_house">our house</string>
+    <!-- %1$s is the house name, %2$s the invite code. -->
+    <string name="invite_share_text">Join %1$s on Roomie with invite code %2$s\nhttps://roomie.app/join/%2$s</string>
+
+    <!-- Sticky notes -->
+    <!-- "- Leah" under a note. -->
+    <string name="note_author">- %s</string>
+    <string name="cd_note_by">by %s</string>
+    <string name="cd_note_pinned">pinned</string>
+    <string name="cd_note_due">due %s</string>
+    <string name="cd_note_read">Read note</string>
+    <string name="cd_note_remove">Remove note</string>
+    <string name="cd_board_edit">Edit board</string>
+    <string name="cd_board_done_editing">Done editing board</string>
+    <string name="note_unpin">Unpin</string>
+    <plurals name="note_pin_for_days">
+        <item quantity="one">Pin for %d day</item>
+        <item quantity="other">Pin for %d days</item>
+    </plurals>
+    <string name="note_delete_title">Delete Note?</string>
+    <string name="note_delete_body">Are you sure? This can’t be undone.</string>
+    <string name="note_quoted">“%s”</string>
+    <string name="note_change_date">%s · Change Date</string>
+    <string name="note_add_due_date">+ Add Due Date</string>
+    <string name="note_remove_date">Remove Date</string>
+    <string name="hold_edit">Edit Note</string>
+    <string name="hold_delete">Delete Note</string>
+    <string name="hold_pin">Pin Note</string>
+    <string name="hold_unpin">Unpin Note</string>
+    <string name="hold_release_edit">Release to edit</string>
+    <string name="hold_release_delete">Release to delete</string>
+    <string name="hold_release_pin">Release to pin</string>
+    <string name="hold_release_unpin">Release to unpin</string>
+    <string name="hold_choose">Choose an Action</string>
+    <string name="hold_slide_pin">Slide to Pin</string>
+    <string name="hold_slide_all">Slide to Edit, Delete, or Pin</string>
+    <string name="more_notes_count">+%d</string>
+    <string name="more_notes">more</string>
+    <plurals name="cd_more_notes">
+        <item quantity="one">See %d more note</item>
+        <item quantity="other">See %d more notes</item>
+    </plurals>
+
+    <!-- Home -->
+    <string name="home_good_morning">Good Morning!</string>
+    <string name="home_good_afternoon">Good Afternoon!</string>
+    <string name="home_good_evening">Good Evening!</string>
+    <string name="home_this_weeks_tasks">This Week’s Tasks</string>
+    <string name="home_view_all">View All</string>
+    <string name="home_no_tasks">Nothing due this week.</string>
+    <string name="home_board_empty">No notes yet. Add one for the house.</string>
+    <string name="cd_home_open_board">Open note board</string>
+    <string name="cd_home_open_note">Open note</string>
+    <!-- %s is the note's author. -->
+    <string name="home_coming_up_note">Coming up · from %s’s note</string>
+    <string name="home_coming_up_pinned">Coming up · from %s’s pinned note</string>
+    <!-- After the note's first line: "Rent due on Friday". -->
+    <string name="home_coming_up_on">" on %s"</string>
+
+    <!-- Shopping -->
+    <string name="shopping_title">Shopping list</string>
+    <string name="shopping_you">You</string>
+    <string name="shopping_you_couldnt_find">You couldn\'t find it</string>
+    <!-- %s is a roommate's first name. -->
+    <string name="shopping_couldnt_find_by">%s couldn\'t find it</string>
+    <!-- "Mina · 3 days ago", "Mina · the blue one". -->
+    <string name="shopping_by_detail">%1$s · %2$s</string>
+    <string name="shopping_add_placeholder">Add an item</string>
+    <string name="shopping_matches_hint">Matches look at the current list and the last %d days, so nobody buys the same thing twice.</string>
+    <string name="shopping_add_again">Add again</string>
+    <string name="cd_shopping_add_again">Add %s again</string>
+    <string name="shopping_needed">Needed · %d</string>
+    <string name="shopping_bought">Bought · %d</string>
+    <string name="shopping_clears_in">Clears in %d days</string>
+    <string name="cd_shopping_show_bought">Show bought items</string>
+    <string name="cd_shopping_hide_bought">Hide bought items</string>
+    <string name="shopping_bought_item">Bought %s</string>
+    <string name="shopping_undo">Undo</string>
+    <string name="shopping_at_store">%s is at the store.</string>
+    <string name="shopping_at_store_detail">" New items still get picked up."</string>
+    <string name="cd_shopping_edit">Edit %s</string>
+    <string name="cd_shopping_mark_bought">Mark %s bought</string>
+    <string name="cd_shopping_put_back">%s bought, tap to put back on the list</string>
+    <string name="shopping_couldnt_find_tag">Couldn\'t find</string>
+    <string name="shopping_quantity">×%d</string>
+    <string name="shopping_empty_title">Nothing on the list</string>
+    <string name="shopping_empty_body">Add things as you run out. Everyone sees them right away, so no one buys it twice.</string>
+    <string name="shopping_add_first">Add first item</string>
+    <string name="shopping_already_on_list">Already on the list · ×%d</string>
+    <string name="shopping_make_it">Make it ×%d</string>
+    <!-- "Bought 2 days ago by you". -->
+    <string name="shopping_bought_ago_by">Bought %1$s by %2$s</string>
+    <string name="shopping_add_as_new">Add “%s” as a new item</string>
+    <string name="edit_item_title">Edit item</string>
+    <string name="edit_item_item">Item</string>
+    <string name="edit_item_name_placeholder">Item name</string>
+    <string name="edit_item_quantity">Quantity</string>
+    <string name="cd_edit_item_decrease">Decrease quantity</string>
+    <string name="cd_edit_item_increase">Increase quantity</string>
+    <string name="edit_item_note">Note · optional</string>
+    <string name="edit_item_note_placeholder">Brand, size, where to find it</string>
+    <string name="cd_edit_item_note">Note</string>
+    <!-- "Added by you · 2 days ago". -->
+    <string name="edit_item_added_by">Added by %1$s · %2$s</string>
+    <string name="edit_item_couldnt_find">Couldn\'t find it</string>
+    <string name="edit_item_found_it">Found it after all</string>
+    <string name="edit_item_clear_couldnt_find">Clear “couldn\'t find”</string>
+
+    <!-- Note board -->
+    <string name="notes_title">Note Board</string>
+    <string name="notes_older_title">Older Notes</string>
+    <string name="notes_add">Add Note</string>
+    <string name="notes_empty">The board is empty. Add the first note for the house.</string>
+    <string name="notes_no_older">No older notes.</string>
+    <string name="notes_back_to_board">Back to the board</string>
+    <string name="notes_older_count">Older notes (%d)</string>
+    <string name="notes_how_it_works">How the board works</string>
+    <!-- %1$d is the most pins, %2$d how many days a pin lasts, %3$d how many days notes stay on the board. -->
+    <string name="notes_how_it_works_body">Pinned notes stay at the top (up to %1$d, and pins last %2$d days). Everything else is newest first. Notes stay on the board for %3$d days unless they have an upcoming date, then move to Older notes.\n\nPress and hold a note to edit, delete or pin it.</string>
+    <string name="notes_got_it">Got it</string>
+    <string name="notes_pins_full">All %d pins are in use</string>
+    <string name="leave_note_title">Leave a Note</string>
+    <string name="leave_note_message">Message</string>
+    <string name="leave_note_placeholder">Type Here...</string>
+    <!-- "120 / 140" characters. -->
+    <string name="leave_note_counter">%1$d / %2$d</string>
+    <string name="leave_note_due_date">"Due Date · "</string>
+    <string name="leave_note_optional">Optional</string>
+    <string name="leave_note_clear">Clear</string>
+    <string name="leave_note_select_due_date">Select a due date</string>
+    <string name="leave_note_stays">Notes stay on the board for %d days.</string>
+    <string name="leave_note_notify">Notify Others</string>
+    <string name="leave_note_post">Post Note</string>
+
+    <!-- Me -->
+    <string name="me_title">Your Space</string>
+    <!-- "jw2877 · Your profile". -->
+    <string name="me_profile">%s · Your profile</string>
+    <string name="cd_me_change_pic">Change pic</string>
+    <plurals name="me_household">
+        <item quantity="one">%d roommate · Your household</item>
+        <item quantity="other">%d roommates · Your household</item>
+    </plurals>
+    <string name="me_edit">Edit</string>
+    <string name="me_rename_house">Rename house</string>
+    <string name="me_house_name">House name</string>
+    <string name="me_sign_out">Sign Out</string>
+    <string name="me_leave_house">Leave House</string>
+    <string name="me_leave_title">Leave %s?</string>
+    <string name="me_leave_body">You\'ll lose access to the house\'s notes, chores and shopping list. A roommate can invite you back.</string>
+    <string name="me_leave">Leave</string>
+    <string name="me_stay">Stay</string>
+
+    <!-- Onboarding -->
+    <string name="cd_onboarding_step">Step %1$d of %2$d</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_busy">Signing In…</string>
+    <string name="sign_in_welcome">Welcome to Roomie</string>
+    <string name="sign_in_subtitle">Sign in with your Cornell NetID</string>
+    <string name="sign_in_net_id">NetID</string>
+    <string name="cd_sign_in_net_id">Cornell NetID</string>
+    <string name="sign_in_net_id_placeholder">e.g. jw2877</string>
+    <string name="sign_in_net_id_suffix">\@cornell.edu</string>
+    <string name="sign_in_password">Password</string>
+    <string name="sign_in_bad_net_id">Enter your Cornell NetID, like jw2877.</string>
+    <string name="sign_in_no_password">Enter your password.</string>
+    <string name="buddy_title">Pick Your House Buddy</string>
+    <string name="buddy_subtitle">Roommates see it next to your name.</string>
+    <string name="buddy_skip">Skip for Now</string>
+    <!-- "Hi Leah,". -->
+    <string name="setup_title">Hi %s,</string>
+    <string name="setup_subtitle">How are you setting up?</string>
+    <string name="setup_start_title">Start a House</string>
+    <string name="setup_start_body">Name it, then add your roommates by NetID.</string>
+    <string name="setup_join_title">Join with an Invite Code</string>
+    <string name="setup_join_body">A roommate already started the house? Enter their code and skip ahead.</string>
+    <string name="setup_code_placeholder">LOFT-0000</string>
+    <string name="cd_setup_code">Invite code</string>
+    <string name="setup_no_code">Enter the invite code from your roommate.</string>
+    <string name="add_roommates_title">Exciting!</string>
+    <string name="add_roommates_subtitle">Add your roommates\' NetIDs.</string>
+    <string name="add_roommates_net_id">Roommate NetID</string>
+    <string name="add_roommates_net_id_placeholder">e.g. ab123</string>
+    <string name="cd_add_roommates_remove">Remove %s</string>
+    <string name="add_roommates_note">They get an email to join and pick their own house buddy. You can keep going. The house updates as they accept.</string>
+    <string name="set_up_house_title">Set Up Your House</string>
+    <string name="set_up_house_name">House Name</string>
+    <string name="set_up_house_name_placeholder">e.g. The Linden Loft</string>
+    <string name="set_up_house_enter">Enter Your House</string>
+    <string name="set_up_house_busy">Setting Up…</string>
+    <string name="set_up_house_code_later">Your invite code appears in Settings once you enter your house.</string>
+    <string name="set_up_house_roommates">Roommates</string>
+    <string name="set_up_house_no_roommates">No roommates yet. Share the invite code to add them.</string>
+
+    <!-- People picker -->
+    <string name="people_picker_select">Select people</string>
+    <string name="people_picker_everyone">Everyone</string>
+    <string name="people_picker_done">Done Selecting</string>
 </resources>

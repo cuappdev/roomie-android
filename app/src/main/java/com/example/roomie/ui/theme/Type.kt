@@ -26,8 +26,16 @@ private fun inter(size: Float, weight: FontWeight, color: androidx.compose.ui.gr
 object RoomieType {
     val screenTitle = inter(26f, FontWeight.Bold, BrandBrown).copy(lineHeight = 1.2.em)
     val welcomeTitle = inter(28f, FontWeight.SemiBold, BrandBrown).copy(lineHeight = 36.sp)
-    val onboardingTitle = inter(28f, FontWeight.SemiBold, BrandBrown).copy(lineHeight = 36.sp, letterSpacing = (-0.3).sp)
-    val onboardingSubtitle = inter(16f, FontWeight.Medium, TextSecondary).copy(lineHeight = 20.sp, letterSpacing = (-0.3).sp)
+    val onboardingTitle = inter(
+        28f,
+        FontWeight.SemiBold,
+        BrandBrown,
+    ).copy(lineHeight = 36.sp, letterSpacing = (-0.3).sp)
+    val onboardingSubtitle = inter(
+        16f,
+        FontWeight.Medium,
+        TextSecondary,
+    ).copy(lineHeight = 20.sp, letterSpacing = (-0.3).sp)
     val onboardingLabel = inter(12f, FontWeight.SemiBold, TextSecondary).copy(lineHeight = 16.sp)
     val onboardingBody = inter(16f, FontWeight.Normal, TextSecondary).copy(lineHeight = 20.sp)
     val onboardingNote = inter(12f, FontWeight.Normal, TextSecondary).copy(lineHeight = 16.sp)

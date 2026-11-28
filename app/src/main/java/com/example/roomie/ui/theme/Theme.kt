@@ -32,6 +32,6 @@ fun RoomieTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = RoomieColorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }
