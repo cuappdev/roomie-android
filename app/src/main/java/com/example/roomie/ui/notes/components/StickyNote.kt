@@ -1,51 +1,49 @@
-package com.example.roomie.ui.components
+package com.example.roomie.ui.notes.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.roomie.R
 import com.example.roomie.data.Note
 import com.example.roomie.data.NoteColor
 import com.example.roomie.data.Tack
-import com.example.roomie.ui.theme.BrandBrown
-import com.example.roomie.ui.theme.CorkInner
-import com.example.roomie.ui.theme.Inter
 import com.example.roomie.ui.theme.NoteBlue
 import com.example.roomie.ui.theme.NoteGreen
 import com.example.roomie.ui.theme.NotePeach
@@ -59,7 +57,6 @@ import com.example.roomie.ui.theme.StickyText
 import com.example.roomie.ui.theme.TackBlue
 import com.example.roomie.ui.theme.TackGreen
 import com.example.roomie.ui.theme.TackRed
-import com.example.roomie.ui.theme.Tan
 import com.example.roomie.ui.util.monthDayLabel
 import com.example.roomie.ui.util.shortLabel
 
@@ -73,15 +70,24 @@ fun NoteColor.color(): Color = when (this) {
 }
 
 /** The three sticky sizes in the design: Home preview, dense board (3 columns) and roomy board (2 columns). */
-enum class StickySize(val width: Dp, val height: Dp, val fontSize: Float, val lineHeight: Float, val authorLineHeight: Float) {
+enum class StickySize(
+    val width: Dp,
+    val height: Dp,
+    val fontSize: Float,
+    val lineHeight: Float,
+    val authorLineHeight: Float,
+) {
     Small(96.dp, 84.dp, 11f, 14f, 13.2f),
     Medium(96.dp, 106.dp, 11.5f, 14.72f, 13.8f),
     Large(140.dp, 120.dp, 14f, 17.92f, 16.8f),
 }
 
 // Slight hand-placed tilts, cycled through so the board looks pinned up by people.
+
 private val SMALL_TILTS = listOf(-4f, 5f, -3f, 4f, -5f)
+
 private val MEDIUM_TILTS = listOf(-3f, 5f, -2f, 3f, -4f, 4f, -3f, 5f, -2f, 3f, -4f, 4f)
+
 private val LARGE_TILTS = listOf(-3f, 4f, 3f, -3f, -4f, 4f)
 
 fun tiltFor(size: StickySize, index: Int): Float = when (size) {
@@ -104,19 +110,38 @@ fun StickyNote(
     removable: Boolean = false,
     onRemove: () -> Unit = {},
 ) {
-    val text = TextStyle(fontFamily = Poppins, fontSize = size.fontSize.sp, lineHeight = size.lineHeight.sp, color = StickyText)
-    val description = buildString {
-        append(note.text).append(", by ").append(authorName)
-        if (pinned) append(", pinned")
-        note.dueDate?.let { append(", due ").append(it.shortLabel()) }
-    }
+    val text =
+        TextStyle(
+            fontFamily = Poppins,
+            fontSize = size.fontSize.sp,
+            lineHeight = size.lineHeight.sp,
+            color = StickyText,
+        )
+    val description = listOfNotNull(
+        note.text,
+        stringResource(R.string.cd_note_by, authorName),
+        if (pinned) stringResource(R.string.cd_note_pinned) else null,
+        note.dueDate?.let { stringResource(R.string.cd_note_due, it.shortLabel()) },
+    ).joinToString(stringResource(R.string.names_separator))
     Box(
         modifier
             .rotate(tilt)
             .size(size.width, size.height)
             .shadow(3.dp, RectangleShape, clip = false, ambientColor = ShadowBrown, spotColor = ShadowBrown)
             .background(note.color.color())
-            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClickLabel = "Read note", onClick = onClick) else Modifier)
+            .then(
+                if (onClick !=
+                    null
+                ) {
+                    Modifier.clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.cd_note_read),
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                },
+            )
             .semantics(mergeDescendants = true) { contentDescription = description },
     ) {
         Column(Modifier.fillMaxSize().padding(start = 9.dp, end = 9.dp, top = 13.dp, bottom = 7.dp)) {
@@ -128,7 +153,7 @@ fun StickyNote(
             }
             Spacer(Modifier.weight(1f))
             Text(
-                "- $authorName",
+                stringResource(R.string.note_author, authorName),
                 style = text.copy(lineHeight = size.authorLineHeight.sp),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
@@ -145,17 +170,26 @@ fun StickyNote(
                     .size(26.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.85f))
-                    .clickable(role = Role.Button, onClickLabel = "Remove note", onClick = onRemove),
+                    .clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.cd_note_remove),
+                        onClick = onRemove,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(painterResource(R.drawable.ic_trash), "Remove note", Modifier.size(14.dp), tint = Color.Unspecified)
+                Icon(
+                    painterResource(R.drawable.ic_trash),
+                    stringResource(R.string.cd_note_remove),
+                    Modifier.size(14.dp),
+                    tint = Color.Unspecified,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DueChip(label: String) {
+internal fun DueChip(label: String) {
     Row(
         Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -175,7 +209,12 @@ private fun PinnedBadge(modifier: Modifier) {
         modifier.size(18.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.8f)),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(painterResource(R.drawable.ic_pinned_badge), "Pinned", Modifier.size(11.dp), tint = Color.Unspecified)
+        Icon(
+            painterResource(R.drawable.ic_pinned_badge),
+            stringResource(R.string.cd_note_pinned),
+            Modifier.size(11.dp),
+            tint = Color.Unspecified,
+        )
     }
 }
 
@@ -183,7 +222,15 @@ private fun PinnedBadge(modifier: Modifier) {
 fun TackView(tack: Tack, modifier: Modifier = Modifier) {
     when (tack) {
         Tack.StarOrange, Tack.StarPink -> Icon(
-            painterResource(if (tack == Tack.StarOrange) R.drawable.ic_tack_star_orange else R.drawable.ic_tack_star_pink),
+            painterResource(
+                if (tack ==
+                    Tack.StarOrange
+                ) {
+                    R.drawable.ic_tack_star_orange
+                } else {
+                    R.drawable.ic_tack_star_pink
+                },
+            ),
             null,
             modifier.offset(y = (-7).dp).size(15.dp),
             tint = Color.Unspecified,
@@ -203,104 +250,4 @@ fun TackView(tack: Tack, modifier: Modifier = Modifier) {
                 ),
         )
     }
-}
-
-/** Tan-framed cork board. The edit button sits in the top-right corner, as in the design. */
-@Composable
-fun CorkBoard(
-    modifier: Modifier = Modifier,
-    onEdit: (() -> Unit)? = null,
-    editing: Boolean = false,
-    elevated: Boolean = false,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    val shape = RoundedCornerShape(14.dp)
-    Box(
-        modifier
-            .fillMaxWidth()
-            // Home refresh: 0 4 4 rgba(0,0,0,.25) under the frame.
-            .then(if (elevated) Modifier.shadow(4.dp, shape, clip = false) else Modifier)
-            .clip(shape)
-            .background(CorkInner)
-            .border(12.dp, Tan, shape)
-            .padding(12.dp),
-    ) {
-        content()
-        if (onEdit != null) {
-            Box(
-                Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(6.dp)
-                    .size(34.dp)
-                    .clip(CircleShape)
-                    .background(if (editing) BrandBrown else CorkInner)
-                    .border(1.dp, BrandBrown, CircleShape)
-                    .clickable(role = Role.Button, onClickLabel = if (editing) "Done editing board" else "Edit board", onClick = onEdit),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painterResource(R.drawable.ic_edit),
-                    if (editing) "Done editing board" else "Edit board",
-                    Modifier.size(16.dp),
-                    tint = if (editing) Color.White else Color.Unspecified,
-                )
-            }
-        }
-    }
-}
-
-/** "+N more" stack on Home that opens the full board. */
-@Composable
-fun MoreNotesStack(count: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Box(modifier.size(width = 84.dp, height = 78.dp)) {
-        Box(Modifier.matchParentSizeOffset(3.dp, 2.dp).rotate(5f).shadow(2.dp, RectangleShape, clip = false).background(NotePurple))
-        Box(Modifier.matchParentSizeOffset(0.dp, 0.dp).rotate(-3f).shadow(2.dp, RectangleShape, clip = false).background(NoteBlue))
-        Column(
-            Modifier
-                .size(width = 84.dp, height = 78.dp)
-                .shadow(3.dp, RectangleShape, clip = false, ambientColor = ShadowBrown, spotColor = ShadowBrown)
-                .background(NotePeach)
-                .clickable(role = Role.Button, onClickLabel = "See $count more notes", onClick = onClick),
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text("+$count", style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 1.em, color = BrandBrown))
-            Text("more", style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = BrandBrown))
-        }
-    }
-}
-
-private fun Modifier.matchParentSizeOffset(x: Dp, y: Dp): Modifier = this.offset(x, y).size(width = 84.dp, height = 78.dp)
-
-/** Full note, opened by tapping a sticky (stickies cut off after 3 lines). */
-@Composable
-fun NoteDetailDialog(
-    note: Note,
-    authorName: String,
-    pinned: Boolean,
-    canPin: Boolean,
-    isMine: Boolean,
-    onTogglePin: () -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = note.color.color(),
-        title = null,
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(note.text, style = TextStyle(fontFamily = Poppins, fontSize = 18.sp, lineHeight = 24.sp, color = StickyText))
-                note.dueDate?.let { DueChip(it.shortLabel()) }
-                Text("- $authorName", style = TextStyle(fontFamily = Poppins, fontSize = 15.sp, color = StickyText), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End)
-            }
-        },
-        confirmButton = { TextAction("Close", onDismiss) },
-        dismissButton = {
-            Row {
-                if (pinned || canPin) TextAction(if (pinned) "Unpin" else "Pin for 7 days", onTogglePin)
-                if (isMine) TextAction("Delete", onDelete, style = RoomieType.linkButton.copy(color = com.example.roomie.ui.theme.Danger))
-            }
-        },
-    )
 }
