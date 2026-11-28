@@ -40,6 +40,35 @@ class ResponseFlowTest {
     }
 
     @Test
+    fun keyedFetchesOnlyReplaceTheirOwnKey() = runBlocking {
+        val weeks = KeyedResponseFlow<Int, String>(scope)
+        val slowFirst = CompletableDeferred<String>()
+
+        weeks.fetch(1) { slowFirst.await() }
+        weeks.fetch(1) { "first, again" }.join()
+        weeks.fetch(2) { "second" }.join()
+        slowFirst.complete("first, stale")
+
+        assertEquals(
+            mapOf(1 to RoomieApiResponse.Success("first, again"), 2 to RoomieApiResponse.Success("second")),
+            weeks.state.value,
+        )
+    }
+
+    @Test
+    fun clearDiscardsKeyedFetchesInFlight() = runBlocking {
+        val weeks = KeyedResponseFlow<Int, String>(scope)
+        val slow = CompletableDeferred<String>()
+
+        val fetch = weeks.fetch(1) { slow.await() }
+        weeks.clear()
+        slow.complete("from before sign-out")
+        fetch.join()
+
+        assertEquals(emptyMap<Int, RoomieApiResponse<String>>(), weeks.state.value)
+    }
+
+    @Test
     fun concurrentUpdatesAreNotLost() = runBlocking {
         val flow = ResponseFlow<Int>(scope)
         flow.set(RoomieApiResponse.Success(0))

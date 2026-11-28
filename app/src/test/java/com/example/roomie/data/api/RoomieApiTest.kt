@@ -162,6 +162,16 @@ class RoomieApiTest {
     }
 
     @Test
+    fun clearsANotesDueDateWithAnExplicitNull() = runBlocking {
+        server.enqueue(json(200, """{"note":null}"""))
+        val noteApi = roomieRetrofit(server.url("/").toString(), tokens, logBodies = false).create(NoteApiService::class.java)
+
+        apiCall { noteApi.updateNote(1, 2, updateNoteBody("Rent", dueOn = null)) }
+
+        assertEquals("""{"body":"Rent","dueOn":null}""", server.takeRequest().body.readUtf8())
+    }
+
+    @Test
     fun reportsNetworkFailures() = runBlocking {
         server.shutdown()
 

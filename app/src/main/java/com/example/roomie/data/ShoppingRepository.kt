@@ -31,6 +31,9 @@ class ShoppingRepository @Inject constructor(private val retrofitInstance: Retro
         _shoppingList.fetch(refresh) { api.getShoppingList(houseId) }
     }
 
+    /** Forgets the list, e.g. on sign-out or after leaving the house. */
+    fun clear() = _shoppingList.set(RoomieApiResponse.Pending)
+
     suspend fun addItem(houseId: Int, name: String, category: ShoppingCategory? = null): RoomieApiResponse<ShoppingItemDto> =
         changing(houseId) { api.addItem(houseId, AddShoppingItemBody(name.trim(), category)).item }
 

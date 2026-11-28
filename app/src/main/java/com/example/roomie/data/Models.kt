@@ -120,6 +120,40 @@ data class Session(
     val hasHouse: Boolean,
 )
 
+/**
+ * What the data source behind [RoomieState] can do. The in-memory fake does everything the design
+ * describes; the real backend doesn't support a few things yet, so screens hide those controls.
+ */
+data class Capabilities(
+    /** "Assign Once" chores. The backend only has repeating chores. */
+    val oneOffChores: Boolean = true,
+    /** The backend gives each turn to one person. */
+    val maxPeoplePerWeek: Int = ChoreRules.MAX_PEOPLE_PER_WEEK,
+    /** Picking the week a rotation edit starts from. The backend applies edits from the next turn. */
+    val rotationStartWeek: Boolean = true,
+    /** A free-text note on a shopping item. */
+    val itemNotes: Boolean = true,
+    /** "Couldn't find it" on a shopping item. */
+    val couldntFind: Boolean = true,
+    /**
+     * True when the server sends every turn, rotation weeks included, in [RoomieState.chores].
+     * False when [ChoreRules] works rotation weeks out from [RoomieState.rotations] (the fake).
+     */
+    val turnsFromServer: Boolean = false,
+) {
+    companion object {
+        /** The Roomie backend as of its `mvp-features` branch. */
+        val Backend = Capabilities(
+            oneOffChores = false,
+            maxPeoplePerWeek = 1,
+            rotationStartWeek = false,
+            itemNotes = false,
+            couldntFind = false,
+            turnsFromServer = true,
+        )
+    }
+}
+
 data class RoomieState(
     val session: Session? = null,
     val house: House? = null,
@@ -130,6 +164,9 @@ data class RoomieState(
     /** Completion date of each rotation week, keyed by [ChoreRules.rotationChoreId]. */
     val rotationCompletions: Map<String, LocalDate> = emptyMap(),
     val shopping: List<ShoppingItem> = emptyList(),
+    val capabilities: Capabilities = Capabilities(),
+    /** True while a saved sign-in is being checked on launch, before the first screen is picked. */
+    val restoring: Boolean = false,
 ) {
     fun member(id: String?): Roommate? = house?.members?.firstOrNull { it.id == id }
 }

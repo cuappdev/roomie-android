@@ -18,6 +18,9 @@ object RoomieGson {
         .registerTypeAdapter(LocalDate::class.java, LocalDateAdapter.nullSafe())
         .registerTypeAdapter(Instant::class.java, InstantAdapter.nullSafe())
         .create()
+
+    /** For the rare body where null means "clear this field", e.g. a note's due date. */
+    val gsonWithNulls: Gson = gson.newBuilder().serializeNulls().create()
 }
 
 private object LocalDateAdapter : TypeAdapter<LocalDate>() {

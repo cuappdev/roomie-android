@@ -1,24 +1,19 @@
 package com.example.roomie.data
 
 import com.example.roomie.data.api.CreateNoteBody
-import com.example.roomie.data.api.NoteApiService
 import com.example.roomie.data.api.NoteBoardResponse
-import com.example.roomie.data.api.NoteColorDto
 import com.example.roomie.data.api.NoteDto
-import com.example.roomie.data.api.PinNoteBody
-import com.example.roomie.data.api.ReportNoteBody
+import com.example.roomie.data.api.ResponseFlow
 import com.example.roomie.data.api.RetrofitInstance
 import com.example.roomie.data.api.RoomieApiResponse
-import com.example.roomie.data.api.UpdateNoteBody
 import com.example.roomie.data.api.apiCall
-import com.example.roomie.data.api.ResponseFlow
 import com.example.roomie.data.api.repositoryScope
+import com.example.roomie.data.api.updateNoteBody
 import kotlinx.coroutines.flow.StateFlow
-import java.time.Instant
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** The backend doesn't serve the Note Board yet; see [NoteApiService]. */
 @Singleton
 class NoteRepository @Inject constructor(private val retrofitInstance: RetrofitInstance) {
 
@@ -27,42 +22,35 @@ class NoteRepository @Inject constructor(private val retrofitInstance: RetrofitI
 
     private val _noteBoard = ResponseFlow<NoteBoardResponse>(scope)
 
-    /** The first page of the board. Refreshed after every change below succeeds. */
+    /** Everything on the board. Refreshed after every change below succeeds. */
     val noteBoard: StateFlow<RoomieApiResponse<NoteBoardResponse>> = _noteBoard.state
 
-    /** Pipelines the first page into [noteBoard]. */
+    /** Pipelines the board into [noteBoard]. */
     fun fetchNoteBoard(houseId: Int, refresh: Boolean = false) {
-        _noteBoard.fetch(refresh) { api.getNotes(houseId, before = null) }
+        _noteBoard.fetch(refresh) { api.getNotes(houseId) }
     }
 
-    /** Older notes. Pass the previous page's `nextCursor` as [before]. Doesn't touch [noteBoard]. */
-    suspend fun getOlderNotes(houseId: Int, before: Int): RoomieApiResponse<NoteBoardResponse> =
-        apiCall { api.getNotes(houseId, before) }
+    /** Forgets the board, e.g. on sign-out or after leaving the house. */
+    fun clear() = _noteBoard.set(RoomieApiResponse.Pending)
 
-    suspend fun createNote(
-        houseId: Int,
-        body: String,
-        color: NoteColorDto? = null,
-        pinnedUntil: Instant? = null,
-    ): RoomieApiResponse<NoteDto> =
-        changing(houseId) { api.createNote(houseId, CreateNoteBody(body.trim(), color, pinnedUntil)).note }
+    /** The server picks the color. [dueOn] can't be in the past. */
+    suspend fun createNote(houseId: Int, body: String, dueOn: LocalDate? = null, pinned: Boolean = false): RoomieApiResponse<NoteDto> =
+        changing(houseId) { api.createNote(houseId, CreateNoteBody(body.trim(), dueOn = dueOn, pinned = pinned)).note }
 
-    suspend fun updateNote(houseId: Int, noteId: Int, body: String? = null, color: NoteColorDto? = null): RoomieApiResponse<NoteDto> =
-        changing(houseId) { api.updateNote(houseId, noteId, UpdateNoteBody(body?.trim(), color)).note }
+    /** Your own notes only. Sets both fields; a null [dueOn] clears the due date. */
+    suspend fun updateNote(houseId: Int, noteId: Int, body: String, dueOn: LocalDate?): RoomieApiResponse<NoteDto> =
+        changing(houseId) { api.updateNote(houseId, noteId, updateNoteBody(body.trim(), dueOn)).note }
 
     suspend fun deleteNote(houseId: Int, noteId: Int): RoomieApiResponse<Unit> =
         changing(houseId) { api.deleteNote(houseId, noteId) }
 
-    /** Leave [until] null to pin until someone unpins it. */
-    suspend fun pinNote(houseId: Int, noteId: Int, until: Instant? = null): RoomieApiResponse<NoteDto> =
-        changing(houseId) { api.pinNote(houseId, noteId, PinNoteBody(until)).note }
+    suspend fun pinNote(houseId: Int, noteId: Int): RoomieApiResponse<NoteDto> =
+        changing(houseId) { api.pinNote(houseId, noteId).note }
 
     suspend fun unpinNote(houseId: Int, noteId: Int): RoomieApiResponse<NoteDto> =
         changing(houseId) { api.unpinNote(houseId, noteId).note }
 
-    suspend fun reportNote(houseId: Int, noteId: Int, reason: String? = null): RoomieApiResponse<Unit> =
-        apiCall { api.reportNote(houseId, noteId, ReportNoteBody(reason)) }
-
+    /** Pinning moves notes between sections, so refetch rather than patch. */
     private suspend fun <T> changing(houseId: Int, call: suspend () -> T): RoomieApiResponse<T> =
         apiCall(call).also { it.ifSuccess { fetchNoteBoard(houseId, refresh = true) } }
 }

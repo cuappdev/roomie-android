@@ -36,14 +36,19 @@ object ChoreRules {
     fun choresInWeek(state: RoomieState, weekStart: LocalDate, today: LocalDate): List<Chore> {
         val days = weekDays(weekStart)
         val oneOffs = state.chores.filter { it.dueDate in days.first()..days.last() }
-        val weekly = state.rotations.mapNotNull { rotationChore(state, it, weekStart) }
+        val weekly = if (state.capabilities.turnsFromServer) emptyList()
+        else state.rotations.mapNotNull { rotationChore(state, it, weekStart) }
         val carried = if (weekStart == weekStart(today)) overdue(state, weekStart) else emptyList()
         return (carried + oneOffs + weekly).sortedWith(compareBy<Chore> { it.done }.thenBy { it.dueDate })
     }
 
-    /** Undone one-offs from before [weekStart], plus last week's rotation turns nobody finished. */
+    /**
+     * Undone one-offs from before [weekStart], plus last week's rotation turns nobody finished.
+     * With [Capabilities.turnsFromServer], every turn is already in [RoomieState.chores].
+     */
     private fun overdue(state: RoomieState, weekStart: LocalDate): List<Chore> {
         val oneOffs = state.chores.filter { !it.done && it.dueDate.isBefore(weekStart) }
+        if (state.capabilities.turnsFromServer) return oneOffs
         val lastWeek = weekStart.minusWeeks(1)
         val weekly = state.rotations.mapNotNull { rotationChore(state, it, lastWeek) }.filterNot { it.done }
         return oneOffs + weekly
@@ -63,6 +68,22 @@ object ChoreRules {
         val week = maxOf(weekStart(today).plusWeeks(1), rotation.startWeek)
         return week to rotation.assigneesFor(week)
     }
+
+    /** Who has [rotation] in each of the [count] weeks from [from], for the Rotation Preview card. */
+    fun previewWeeks(rotation: Rotation, from: LocalDate, count: Int = 3): List<Pair<LocalDate, List<String>>> =
+        (0L until count).map { from.plusWeeks(it) }.map { it to rotation.assigneesFor(it) }
+
+    /**
+     * [selected] with [id] added ([on]) or removed. The result keeps [houseOrder], so a rotation goes
+     * round the house the same way every time whatever order people were ticked in.
+     */
+    fun toggleMember(houseOrder: List<String>, selected: List<String>, id: String, on: Boolean): List<String> {
+        val next = if (on) selected + id else selected - id
+        return houseOrder.filter { it in next }
+    }
+
+    /** People per week can't exceed the people in the rotation, and is at least 1. */
+    fun clampPerWeek(perWeek: Int, people: Int): Int = perWeek.coerceAtMost(people.coerceAtLeast(1))
 
     /**
      * The rotation as it would be with a new plan from [fromWeek]. The new member order starts with
